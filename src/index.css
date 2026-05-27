@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+:root {
+  --color-unique: #808000;
+  --color-set: #00c400;
+  --color-runeword: #c0c0c0;
+  --color-rare: #ffff00;
+  --color-magic: #6784ed;
+  --color-stat: #00ffff;
+  --color-variable: #ff00ff;
+}
+
+body {
+  margin: 0;
+  background-color: #000;
+  color: #fff;
+  font-family: '微軟正黑體', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+}
+
+.text-unique { color: var(--color-unique); }
+.text-set { color: var(--color-set); }
+.text-runeword { color: var(--color-runeword); }
+.text-rare { color: var(--color-rare); }
+.text-magic { color: var(--color-magic); }
+.text-stat { color: var(--color-stat); }
+.text-variable { color: var(--color-variable); }
