@@ -14,12 +14,20 @@ const NAV: NavItem[] = [
       { label: '獨特裝備', to: '/items/unique' },
       { label: '成套裝備', to: '/items/sets' },
       { label: '職業專屬', to: '/items/class' },
+      { label: '獨特珠寶', to: '/items/jewels' },
+      { label: '手工製作', to: '/items/crafted' },
+      { label: '方塊合成', to: '/cube' },
+      { label: '魔法字首字尾', to: '/magic/affixes' },
+      { label: '飾品字首', to: '/magic/charm-affixes' },
+      { label: '稀有裝備名稱', to: '/magic/rare-names' },
     ],
   },
   {
     label: '符文研究',
     children: [
+      { label: '符文介紹', to: '/runes' },
       { label: '符文字', to: '/runewords' },
+      { label: '寶石介紹', to: '/gems' },
     ],
   },
   {
@@ -34,7 +42,26 @@ const NAV: NavItem[] = [
       { label: '刺客', to: '/builds/assassin' },
     ],
   },
-  { label: 'IAS 計算', to: '/ias' },
+  {
+    label: 'IAS 攻速',
+    children: [
+      { label: '傭兵計算器', to: '/ias' },
+      { label: '武器速度表', to: '/ias/weapons' },
+    ],
+  },
+  {
+    label: '遊戲機制',
+    children: [
+      { label: '神殿介紹', to: '/shrines' },
+      { label: 'Magic Find', to: '/magic-find' },
+      { label: '地表暗黑', to: '/diablo-clone' },
+      { label: '各地區小王', to: '/kings' },
+      { label: '攻速斷點表', to: '/breakpoints' },
+      { label: '場景等級', to: '/area-levels' },
+      { label: '遊戲公式', to: '/formulas' },
+      { label: '超強特殊頭目', to: '/super-boss' },
+    ],
+  },
   { label: '關於易牙居', to: '/about' },
 ];
 

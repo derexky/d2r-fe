@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 const MERCS = [
   { value: 'act1', label: '第一幕傭兵（冷/火箭手）' },
   { value: 'act2', label: '第二幕傭兵（沙漠勇士）' },
-  { value: 'act3', label: '第三幕傭兵（鐵衛）' },
   { value: 'act5', label: '第五幕傭兵（野蠻人）' },
 ];
 
