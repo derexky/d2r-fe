@@ -114,18 +114,20 @@ function safeJson<T>(val: string | null): T | null {
 function DataTable({ rows }: { rows: string[][] }) {
   if (!rows.length) return null;
   return (
-    <table className="text-sm border-collapse w-full">
-      <tbody>
-        {rows.map((row, i) => (
-          <tr key={i} style={{ borderBottom: '1px solid #222' }}>
-            {row.map((cell, j) => (
-              <td key={j} className="py-1 pr-4" style={{ color: '#00ffff' }}>
-                {cell}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="overflow-x-auto">
+      <table className="text-sm border-collapse w-full">
+        <tbody>
+          {rows.map((row, i) => (
+            <tr key={i} style={{ borderBottom: '1px solid #222' }}>
+              {row.map((cell, j) => (
+                <td key={j} className="py-1 pr-4" style={{ color: '#00ffff' }}>
+                  {cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

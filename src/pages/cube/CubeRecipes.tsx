@@ -107,30 +107,32 @@ const RECIPES_MAP: Record<string, Recipe[]> = {
 
 function RecipeTable({ recipes }: { recipes: Recipe[] }) {
   return (
-    <table className="w-full text-sm border-collapse">
-      <thead>
-        <tr style={{ borderBottom: '1px solid #333' }}>
-          <th className="text-left py-2 px-3 text-gray-400 font-normal w-1/2">材料</th>
-          <th className="text-left py-2 px-3 text-gray-400 font-normal">結果</th>
-        </tr>
-      </thead>
-      <tbody>
-        {recipes.map((r, i) => (
-          <tr
-            key={i}
-            style={{ backgroundColor: i % 2 === 1 ? '#0d0d0d' : 'transparent', borderBottom: '1px solid #1a1a1a' }}
-          >
-            <td className="py-2 px-3 text-gray-300">{r.input}</td>
-            <td className="py-2 px-3">
-              <span style={{ color: '#c0a030' }}>{r.output}</span>
-              {r.note && (
-                <span className="text-xs text-gray-500 ml-2">（{r.note}）</span>
-              )}
-            </td>
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr style={{ borderBottom: '1px solid #333' }}>
+            <th className="text-left py-2 px-3 text-gray-400 font-normal w-1/2">材料</th>
+            <th className="text-left py-2 px-3 text-gray-400 font-normal">結果</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {recipes.map((r, i) => (
+            <tr
+              key={i}
+              style={{ backgroundColor: i % 2 === 1 ? '#0d0d0d' : 'transparent', borderBottom: '1px solid #1a1a1a' }}
+            >
+              <td className="py-2 px-3 text-gray-300">{r.input}</td>
+              <td className="py-2 px-3">
+                <span style={{ color: '#c0a030' }}>{r.output}</span>
+                {r.note && (
+                  <span className="text-xs text-gray-500 ml-2">（{r.note}）</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

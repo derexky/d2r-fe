@@ -193,7 +193,8 @@ export default function AreaLevels() {
         ))}
       </div>
 
-      <table className="text-xs border-collapse w-full max-w-lg">
+      <div className="overflow-x-auto max-w-lg">
+        <table className="text-xs border-collapse w-full">
         <thead>
           <tr style={{ background: '#111' }}>
             {['地圖', '普通', '惡夢', '地獄'].map((h) => (
@@ -231,7 +232,8 @@ export default function AreaLevels() {
             );
           })}
         </tbody>
-      </table>
+        </table>
+      </div>
     </div>
   );
 }

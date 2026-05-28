@@ -235,7 +235,7 @@ export default function CraftedItems() {
 
       <div className="mb-4 p-3 border max-w-lg" style={{ borderColor: '#1a1a1a' }}>
         <h3 className="text-xs font-bold text-gray-400 mb-2">符文對應等級（角色等級決定所需符文）</h3>
-        <div className="grid grid-cols-5 gap-x-4 gap-y-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-4 gap-y-1">
           {RUNE_TABLE.map((r) => (
             <div key={r.clvl} className="text-xs">
               <span className="text-gray-500">Clvl {r.clvl}：</span>

@@ -31,7 +31,7 @@ export default function UniqueIndex() {
       <h1 className="text-xl font-bold mb-4" style={{ color: '#808000' }}>
         獨特裝備
       </h1>
-      <div className="grid grid-cols-3 gap-2 max-w-md">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-md">
         {CATEGORIES.map((c) => (
           <Link
             key={c.value}
