@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { api } from '../../api';
 import StatList from '../../components/ui/StatList';
@@ -24,19 +25,24 @@ const TIER_LABELS: Record<string, string> = {
   elite: '頂級',
 };
 
+// Categories that map to class_specific items with a class filter
+const CLASS_CATEGORY_MAP: Record<string, { category: string; class: string }> = {
+  grimoires: { category: 'class_specific', class: 'warlock' },
+};
+
 export default function UniqueList() {
   const { category } = useParams<{ category: string }>();
   const [tier, setTier] = useState('normal');
-  const [items, setItems] = useState<Item[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setLoading(true);
-    api.getItems({ category: category!, tier }).then((r) => {
-      setItems(r);
-      setLoading(false);
-    });
-  }, [category, tier]);
+  const classMapping = category ? CLASS_CATEGORY_MAP[category] : undefined;
+  const queryParams = classMapping
+    ? { ...classMapping }
+    : { category: category!, tier };
+
+  const { data: items = [], isLoading: loading } = useQuery<Item[]>({
+    queryKey: ['items', category, tier],
+    queryFn: () => api.getItems(queryParams),
+  });
 
   return (
     <div>
@@ -44,22 +50,24 @@ export default function UniqueList() {
         獨特裝備 — {category}
       </h1>
 
-      <div className="flex gap-2 mb-4">
-        {TIERS.map((t) => (
-          <button
-            key={t}
-            onClick={() => setTier(t)}
-            className="px-3 py-1 text-sm border transition-colors"
-            style={{
-              borderColor: tier === t ? '#808000' : '#404040',
-              color: tier === t ? '#808000' : '#888',
-              backgroundColor: tier === t ? '#1a1400' : 'transparent',
-            }}
-          >
-            {TIER_LABELS[t]}
-          </button>
-        ))}
-      </div>
+      {!classMapping && (
+        <div className="flex gap-2 mb-4">
+          {TIERS.map((t) => (
+            <button
+              key={t}
+              onClick={() => setTier(t)}
+              className="px-3 py-1 text-sm border transition-colors"
+              style={{
+                borderColor: tier === t ? '#808000' : '#404040',
+                color: tier === t ? '#808000' : '#888',
+                backgroundColor: tier === t ? '#1a1400' : 'transparent',
+              }}
+            >
+              {TIER_LABELS[t]}
+            </button>
+          ))}
+        </div>
+      )}
 
       {loading ? (
         <LoadingSpinner />

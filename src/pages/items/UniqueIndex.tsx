@@ -12,6 +12,7 @@ const CATEGORIES = [
   { label: '法杖類', value: 'staves' },
   { label: '刀類', value: 'swords' },
   { label: '投擲類', value: 'throwing' },
+  { label: '標槍類', value: 'javelins' },
   { label: '棒杖類', value: 'wands' },
   { label: '圓盾類', value: 'shields' },
   { label: '頭盔類', value: 'helms' },
@@ -23,6 +24,7 @@ const CATEGORIES = [
   { label: '戒指', value: 'rings' },
   { label: '護身符', value: 'amulets' },
   { label: '護符', value: 'charms' },
+  { label: '術士魔典', value: 'grimoires' },
 ];
 
 export default function UniqueIndex() {

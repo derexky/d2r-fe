@@ -89,6 +89,93 @@ const FACETS = [
   },
 ];
 
+const D2R_JEWELS = [
+  {
+    name_zh: '防禦者的膽汁',
+    name_en: "Defender's Bile",
+    level_req: 75,
+    stats: [
+      '1% 機率施展等級 25 骸骨護甲（被擊中時）',
+      '+(5-10)% 毒素技能傷害',
+      '+95 毒素傷害（1秒）',
+      '-(5-10)% 敵人的毒素抗性',
+      '+(3-5)% 轉為經驗值',
+      '+(25-50)% 額外金幣（怪物）',
+      '(15-35)% 更佳機會取得魔法物品',
+    ],
+  },
+  {
+    name_zh: '保衛者的冰霜',
+    name_en: "Protector's Frost",
+    level_req: 75,
+    stats: [
+      '1% 機率施展等級 25 冰封甲（被擊中時）',
+      '+(5-10)% 冰冷技能傷害',
+      '冰冷傷害 +10-30',
+      '-(5-10)% 敵人的冰冷抗性',
+      '+(3-5)% 轉為經驗值',
+      '+(25-50)% 額外金幣（怪物）',
+      '(15-35)% 更佳機會取得魔法物品',
+    ],
+  },
+  {
+    name_zh: '守護者的閃電',
+    name_en: "Guardian's Thunder",
+    level_req: 75,
+    stats: [
+      '1% 機率施展等級 25 氣旋護甲（被擊中時）',
+      '+(5-10)% 閃電技能傷害',
+      '閃電傷害 +1-75',
+      '-(5-10)% 敵人的閃電抗性',
+      '+(3-5)% 轉為經驗值',
+      '+(25-50)% 額外金幣（怪物）',
+      '(15-35)% 更佳機會取得魔法物品',
+    ],
+  },
+  {
+    name_zh: '防禦者的火焰',
+    name_en: "Defender's Fire",
+    level_req: 75,
+    stats: [
+      '1% 機率施展等級 25 熾烈之徑（被擊中時）',
+      '+(5-10)% 火焰技能傷害',
+      '火焰傷害 +20-60',
+      '-(5-10)% 敵人的火焰抗性',
+      '+(3-5)% 轉為經驗值',
+      '+(25-50)% 額外金幣（怪物）',
+      '(15-35)% 更佳機會取得魔法物品',
+    ],
+  },
+  {
+    name_zh: '保衛者的岩石',
+    name_en: "Protector's Stone",
+    level_req: 75,
+    stats: [
+      '1% 機率施展等級 15 影散（被擊中時）',
+      '+(30-50)% 增強傷害',
+      '物理傷害 +10-30',
+      '-(5-10)% 敵人的物理抗性',
+      '+(3-5)% 轉為經驗值',
+      '+(25-50)% 額外金幣（怪物）',
+      '(15-35)% 更佳機會取得魔法物品',
+    ],
+  },
+  {
+    name_zh: '守護者的光芒',
+    name_en: "Guardian's Light",
+    level_req: 75,
+    stats: [
+      '1% 機率施展等級 25 靈能護盾（被擊中時）',
+      '+(5-10)% 魔法技能傷害',
+      '魔法傷害 +15-35',
+      '-(5-10)% 敵人的魔法抗性',
+      '+(3-5)% 轉為經驗值',
+      '+(25-50)% 額外金幣（怪物）',
+      '(15-35)% 更佳機會取得魔法物品',
+    ],
+  },
+];
+
 export default function JewelList() {
   return (
     <div>
@@ -135,6 +222,28 @@ export default function JewelList() {
       <p className="text-xs text-gray-600 mt-4">
         霈值 = 隨機範圍值。同一元素的兩種觸發方式可疊加（例如同時裝備火焰殺死版與火焰升級版）。
       </p>
+
+      <h2 className="text-base font-bold mt-6 mb-3" style={{ color: '#808000' }}>
+        D2R 新增獨特珠寶
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {D2R_JEWELS.map((j) => (
+          <div key={j.name_en} className="border p-3" style={{ borderColor: '#2a2a2a' }}>
+            <div className="flex items-center gap-2 mb-2">
+              <div>
+                <span className="text-sm font-bold" style={{ color: '#ffff00' }}>{j.name_zh}</span>
+                <span className="text-xs text-gray-400 ml-2">{j.name_en}</span>
+                <span className="text-xs text-gray-500 ml-2">需求等級：{j.level_req}</span>
+              </div>
+            </div>
+            <div className="text-xs space-y-1 pl-1">
+              {j.stats.map((s, i) => (
+                <div key={i} style={{ color: '#00ffff' }}>{s}</div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
