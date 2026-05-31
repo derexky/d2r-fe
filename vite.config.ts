@@ -29,13 +29,14 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,json}'],
+        navigateFallback: 'index.html',
         runtimeCaching: [
           {
-            urlPattern: /^\/api\/.*/i,
-            handler: 'NetworkFirst',
+            urlPattern: /^\/assets\/img\/.*/i,
+            handler: 'CacheFirst',
             options: {
-              cacheName: 'api-cache',
-              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 },
+              cacheName: 'item-images',
+              expiration: { maxEntries: 500, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },
         ],
