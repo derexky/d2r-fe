@@ -35,7 +35,7 @@ export default function UniqueList() {
   const [tier, setTier] = useState('normal');
 
   const classMapping = category ? CLASS_CATEGORY_MAP[category] : undefined;
-  const queryParams = classMapping
+  const queryParams: Record<string, string> = classMapping
     ? { ...classMapping }
     : { category: category!, tier };
 
