@@ -58,8 +58,17 @@ const NAV: NavItem[] = [
       { label: '各地區小王', to: '/kings' },
       { label: '攻速斷點表', to: '/breakpoints' },
       { label: '場景等級', to: '/area-levels' },
+      { label: '85 場景表', to: '/alvl85' },
+      { label: '最佳練級難度', to: '/level-up' },
+      { label: '最大孔數', to: '/max-sockets' },
       { label: '遊戲公式', to: '/formulas' },
       { label: '超強特殊頭目', to: '/super-boss' },
+    ],
+  },
+  {
+    label: '翻譯對照',
+    children: [
+      { label: '新舊翻譯對照', to: '/translations' },
     ],
   },
   { label: '關於易牙居', to: '/about' },

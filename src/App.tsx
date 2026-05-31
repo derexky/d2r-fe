@@ -29,6 +29,10 @@ import SuperBoss from './pages/mechanics/SuperBoss';
 import AffixList from './pages/magic/AffixList';
 import CharmAffixes from './pages/magic/CharmAffixes';
 import RareNames from './pages/magic/RareNames';
+import LevelUp from './pages/mechanics/LevelUp';
+import MaxSockets from './pages/mechanics/MaxSockets';
+import Alvl85 from './pages/mechanics/Alvl85';
+import Translations from './pages/misc/Translations';
 
 export default function App() {
   return (
@@ -66,6 +70,10 @@ export default function App() {
           <Route path="ias" element={<IasIndex />} />
           <Route path="ias/weapons" element={<WeaponSpeed />} />
           <Route path="ias/:merc" element={<IasCalculator />} />
+          <Route path="level-up" element={<LevelUp />} />
+          <Route path="max-sockets" element={<MaxSockets />} />
+          <Route path="alvl85" element={<Alvl85 />} />
+          <Route path="translations" element={<Translations />} />
           <Route path="about" element={<About />} />
         </Route>
       </Routes>
