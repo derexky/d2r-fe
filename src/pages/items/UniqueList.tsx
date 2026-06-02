@@ -25,19 +25,11 @@ const TIER_LABELS: Record<string, string> = {
   elite: '頂級',
 };
 
-// Categories that map to class_specific items with a class filter
-const CLASS_CATEGORY_MAP: Record<string, { category: string; class: string }> = {
-  grimoires: { category: 'class_specific', class: 'warlock' },
-};
-
 export default function UniqueList() {
   const { category } = useParams<{ category: string }>();
   const [tier, setTier] = useState('normal');
 
-  const classMapping = category ? CLASS_CATEGORY_MAP[category] : undefined;
-  const queryParams: Record<string, string> = classMapping
-    ? { ...classMapping }
-    : { category: category!, tier };
+  const queryParams: Record<string, string> = { category: category!, tier };
 
   const { data: items = [], isLoading: loading } = useQuery<Item[]>({
     queryKey: ['items', category, tier],
@@ -50,8 +42,7 @@ export default function UniqueList() {
         獨特裝備 — {category}
       </h1>
 
-      {!classMapping && (
-        <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-4">
           {TIERS.map((t) => (
             <button
               key={t}
@@ -67,7 +58,6 @@ export default function UniqueList() {
             </button>
           ))}
         </div>
-      )}
 
       {loading ? (
         <LoadingSpinner />

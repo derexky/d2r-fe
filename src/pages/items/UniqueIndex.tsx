@@ -24,7 +24,6 @@ const CATEGORIES = [
   { label: '戒指', value: 'rings' },
   { label: '護身符', value: 'amulets' },
   { label: '護符', value: 'charms' },
-  { label: '術士魔典', value: 'grimoires' },
 ];
 
 export default function UniqueIndex() {

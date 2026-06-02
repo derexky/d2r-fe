@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../api';
 import StatList from '../../components/ui/StatList';
@@ -12,6 +12,7 @@ const CLASSES = [
   { value: 'necromancer', label: '死靈法師' },
   { value: 'paladin', label: '聖騎士' },
   { value: 'sorceress', label: '法師' },
+  { value: 'warlock', label: '術士' },
 ];
 
 interface Item {
@@ -30,16 +31,11 @@ export default function ClassItems() {
   const { class: cls } = useParams<{ class: string }>();
   const navigate = useNavigate();
   const activeClass = cls || 'barbarian';
-  const [items, setItems] = useState<Item[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setLoading(true);
-    api.getItems({ class: activeClass }).then((r) => {
-      setItems(r);
-      setLoading(false);
-    });
-  }, [activeClass]);
+  const { data: items = [], isLoading: loading } = useQuery<Item[]>({
+    queryKey: ['items', 'class', activeClass],
+    queryFn: () => api.getItems({ class: activeClass }),
+  });
 
   const classLabel = CLASSES.find((c) => c.value === activeClass)?.label ?? activeClass;
 
