@@ -18,6 +18,8 @@ import GemList from './pages/gems/GemList';
 import CubeRecipes from './pages/cube/CubeRecipes';
 import JewelList from './pages/items/JewelList';
 import CraftedItems from './pages/items/CraftedItems';
+import BaseItemIndex from './pages/items/BaseItemIndex';
+import BaseItemList from './pages/items/BaseItemList';
 import ShrineList from './pages/shrines/ShrineList';
 import MagicFind from './pages/mechanics/MagicFind';
 import DiabloClone from './pages/mechanics/DiabloClone';
@@ -48,6 +50,8 @@ export default function App() {
           <Route path="items/class/:class" element={<ClassItems />} />
           <Route path="items/jewels" element={<JewelList />} />
           <Route path="items/crafted" element={<CraftedItems />} />
+          <Route path="items/base" element={<BaseItemIndex />} />
+          <Route path="items/base/:gid" element={<BaseItemList />} />
           <Route path="runes" element={<RuneList />} />
           <Route path="gems" element={<GemList />} />
           <Route path="cube" element={<CubeRecipes />} />

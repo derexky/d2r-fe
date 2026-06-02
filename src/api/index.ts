@@ -34,4 +34,8 @@ export const api = {
   // Announcements
   getAnnouncements: () =>
     client.get('/announcements').then((r) => r.data.data),
+
+  // Base items
+  getBaseItems: (params?: Record<string, string>) =>
+    client.get('/base-items', { params }).then((r) => r.data.data),
 };
