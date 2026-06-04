@@ -35,6 +35,8 @@ import LevelUp from './pages/mechanics/LevelUp';
 import MaxSockets from './pages/mechanics/MaxSockets';
 import Alvl85 from './pages/mechanics/Alvl85';
 import Translations from './pages/misc/Translations';
+import TradeList from './pages/trade/TradeList';
+import TradeNew from './pages/trade/TradeNew';
 
 export default function App() {
   return (
@@ -78,6 +80,8 @@ export default function App() {
           <Route path="max-sockets" element={<MaxSockets />} />
           <Route path="alvl85" element={<Alvl85 />} />
           <Route path="translations" element={<Translations />} />
+          <Route path="trade" element={<TradeList />} />
+          <Route path="trade/new" element={<TradeNew />} />
           <Route path="about" element={<About />} />
         </Route>
       </Routes>

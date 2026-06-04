@@ -72,6 +72,7 @@ const NAV: NavItem[] = [
       { label: '新舊翻譯對照', to: '/translations' },
     ],
   },
+  { label: '交易市集', to: '/trade' },
   { label: '關於易牙居', to: '/about' },
 ];
 
