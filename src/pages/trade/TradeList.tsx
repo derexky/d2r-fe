@@ -23,6 +23,9 @@ const FILTER_CHIPS = [
   { label: '盔甲', value: 'armors' },
   { label: '武器', value: 'weapons' },
   { label: '盾牌', value: 'shields' },
+  { label: '手套', value: 'gloves' },
+  { label: '腰帶', value: 'belts' },
+  { label: '靴類', value: 'boots' },
   { label: '其他', value: 'other' },
 ];
 
@@ -42,7 +45,9 @@ export default function TradeList() {
   });
 
   const copyContact = (contact: string) => {
-    navigator.clipboard.writeText(contact);
+    navigator.clipboard.writeText(contact).catch(() => {
+      window.prompt('複製聯絡方式：', contact);
+    });
   };
 
   return (
