@@ -38,4 +38,15 @@ export const api = {
   // Base items
   getBaseItems: (params?: Record<string, string>) =>
     client.get('/base-items', { params }).then((r) => r.data.data),
+
+  // Trades
+  getTrades: (params?: Record<string, string>) =>
+    client.get('/trades', { params }).then((r) => r.data.data),
+  createTrade: (body: {
+    item_name: string;
+    item_stats_raw?: string;
+    price: string;
+    contact: string;
+    category?: string;
+  }) => client.post('/trades', body).then((r) => r.data.data),
 };
