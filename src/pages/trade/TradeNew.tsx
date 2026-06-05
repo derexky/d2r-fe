@@ -1,6 +1,6 @@
 // d2r-fe/src/pages/trade/TradeNew.tsx
 import { useState, useCallback } from 'react';
-import Tesseract from 'tesseract.js';
+import { createWorker, PSM, OEM } from 'tesseract.js';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api';
 
@@ -45,6 +45,80 @@ const labelStyle: React.CSSProperties = {
   marginBottom: '2px',
 };
 
+let itemNamesCache: string[] | null = null;
+let baseItemNamesCache: string[] | null = null;
+
+async function getItemNames(): Promise<string[]> {
+  if (!itemNamesCache) {
+    itemNamesCache = await fetch('/data/item-names.json').then((r) => r.json());
+  }
+  return itemNamesCache!;
+}
+
+async function getBaseItemNames(): Promise<string[]> {
+  if (!baseItemNamesCache) {
+    baseItemNamesCache = await fetch('/data/base-item-names.json').then((r) => r.json());
+  }
+  return baseItemNamesCache!;
+}
+
+function levenshteinSim(a: string, b: string): number {
+  const m = a.length, n = b.length;
+  if (!m || !n) return 0;
+  const dp = Array.from({ length: m + 1 }, (_, i) =>
+    Array.from({ length: n + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0)),
+  );
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i - 1] === b[j - 1] ? dp[i - 1][j - 1] : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+  return 1 - dp[m][n] / Math.max(m, n);
+}
+
+function fuzzyMatchName(ocrName: string, candidates: string[]): string | null {
+  if (!ocrName || !candidates.length) return null;
+  let best = { name: '', score: 0 };
+  for (const name of candidates) {
+    const score = levenshteinSim(ocrName, name);
+    if (score > best.score) best = { name, score };
+  }
+  return best.score >= 0.5 ? best.name : null;
+}
+
+function fixOcrText(raw: string): string {
+  return raw
+    .replace(/[|{}[\]]/g, '')                                         // strip junk chars
+    .replace(/¥/g, '+')                                               // ¥ → + (D2R font)
+    .replace(/(\d+)96(?=\s|$)/gm, '$1%')                             // N96 → N% (D2R % font)
+    .replace(/(?<=[一-鿿])\s+(?=[一-鿿])/g, '')      // collapse inter-CJK spaces
+    .split('\n').map((l) => l.trim()).filter(Boolean).join('\n');
+}
+
+function preprocessForOCR(file: File): Promise<HTMLCanvasElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width * 2;
+      canvas.height = img.height * 2;
+      const ctx = canvas.getContext('2d')!;
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const { data } = imageData;
+      for (let i = 0; i < data.length; i += 4) {
+        const gray = Math.round(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
+        data[i] = data[i + 1] = data[i + 2] = gray;
+      }
+      ctx.putImageData(imageData, 0, 0);
+      URL.revokeObjectURL(url);
+      resolve(canvas);
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
 export default function TradeNew() {
   const navigate = useNavigate();
   const [ocrProgress, setOcrProgress] = useState<number | null>(null);
@@ -66,22 +140,35 @@ export default function TradeNew() {
     setOcrRaw('');
 
     try {
-      const result = await Tesseract.recognize(file, 'chi_tra+eng', {
+      const canvas = await preprocessForOCR(file);
+      const worker = await createWorker('chi_tra+eng', OEM.LSTM_ONLY, {
         logger: (m) => {
           if (m.status === 'recognizing text') {
             setOcrProgress(Math.round(m.progress * 100));
           }
         },
       });
+      await worker.setParameters({ tessedit_pageseg_mode: PSM.SINGLE_BLOCK });
+      const result = await worker.recognize(canvas);
+      await worker.terminate();
 
-      const text = result.data.text.trim();
+      const text = fixOcrText(result.data.text);
       setOcrRaw(text);
-
       const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+
+      const [itemNames, baseItemNames] = await Promise.all([getItemNames(), getBaseItemNames()]);
+
+      const ocrName = lines[0] ?? '';
+      const matchedName = fuzzyMatchName(ocrName, itemNames) ?? ocrName;
+
+      const ocrBase = lines[1] ?? '';
+      const matchedBase = fuzzyMatchName(ocrBase, baseItemNames) ?? ocrBase;
+
+      const statsLines = lines.slice(2);
       setForm((f) => ({
         ...f,
-        item_name: lines[0] ?? '',
-        item_stats_raw: lines.slice(1).join('\n'),
+        item_name: matchedName,
+        item_stats_raw: [matchedBase, ...statsLines].join('\n'),
       }));
     } catch {
       setOcrRaw('⚠ OCR 辨識失敗，請手動填入屬性');

@@ -39,6 +39,13 @@ export const api = {
   getBaseItems: (params?: Record<string, string>) =>
     client.get('/base-items', { params }).then((r) => r.data.data),
 
+  // OCR
+  ocrImage: (file: File) => {
+    const form = new FormData();
+    form.append('image', file);
+    return client.post<{ text: string }>('/ocr', form).then((r) => r.data.text);
+  },
+
   // Trades
   getTrades: (params?: Record<string, string>) =>
     client.get('/trades', { params }).then((r) => r.data.data),
