@@ -54,6 +54,7 @@ const NAV: NavItem[] = [
     label: '遊戲機制',
     children: [
       { label: '神殿介紹', to: '/shrines' },
+      { label: '靈氣特效', to: '/auras' },
       { label: 'Magic Find', to: '/magic-find' },
       { label: '地表暗黑', to: '/diablo-clone' },
       { label: '各地區小王', to: '/kings' },
