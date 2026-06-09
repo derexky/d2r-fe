@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { api } from '../../api';
 import StatList from '../../components/ui/StatList';
@@ -33,15 +33,11 @@ function safeParseJson<T>(val: string | null): T[] {
 
 export default function SetDetail() {
   const { id } = useParams<{ id: string }>();
-  const [set, setSet] = useState<ItemSet | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    api.getSet(Number(id)).then((r) => {
-      setSet(r);
-      setLoading(false);
-    });
-  }, [id]);
+  const { data: set, isLoading: loading } = useQuery<ItemSet>({
+    queryKey: ['set', id],
+    queryFn: () => api.getSet(Number(id)),
+  });
 
   if (loading) return <LoadingSpinner />;
   if (!set) return <p className="text-red-400">找不到套裝</p>;

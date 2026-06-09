@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { api } from '../../api';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
@@ -24,16 +25,11 @@ const SLOTS = [
 export default function RunewordList() {
   const { slot } = useParams<{ slot?: string }>();
   const [activeSlot, setActiveSlot] = useState(slot || 'weapon');
-  const [words, setWords] = useState<Runeword[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setLoading(true);
-    api.getRunewords({ slot: activeSlot }).then((r) => {
-      setWords(r);
-      setLoading(false);
-    });
-  }, [activeSlot]);
+  const { data: words = [], isLoading: loading } = useQuery<Runeword[]>({
+    queryKey: ['runewords', activeSlot],
+    queryFn: () => api.getRunewords({ slot: activeSlot }),
+  });
 
   return (
     <div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { api } from '../../api';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
@@ -10,15 +10,10 @@ interface ItemSet {
 }
 
 export default function SetIndex() {
-  const [sets, setSets] = useState<ItemSet[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    api.getSets().then((r) => {
-      setSets(r);
-      setLoading(false);
-    });
-  }, []);
+  const { data: sets = [], isLoading: loading } = useQuery<ItemSet[]>({
+    queryKey: ['sets'],
+    queryFn: () => api.getSets(),
+  });
 
   if (loading) return <LoadingSpinner />;
 

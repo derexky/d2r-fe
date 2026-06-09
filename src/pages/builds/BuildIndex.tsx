@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../../api';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
@@ -33,16 +33,11 @@ export default function BuildIndex() {
   const { class: cls } = useParams<{ class: string }>();
   const navigate = useNavigate();
   const activeClass = cls || 'barbarian';
-  const [builds, setBuilds] = useState<Build[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setLoading(true);
-    api.getBuilds({ class: activeClass }).then((r) => {
-      setBuilds(r);
-      setLoading(false);
-    });
-  }, [activeClass]);
+  const { data: builds = [], isLoading: loading } = useQuery<Build[]>({
+    queryKey: ['builds', activeClass],
+    queryFn: () => api.getBuilds({ class: activeClass }),
+  });
 
   const color = CLASS_COLORS[activeClass] || '#808000';
 

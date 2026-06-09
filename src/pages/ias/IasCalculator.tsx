@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { api } from '../../api';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
@@ -18,20 +19,17 @@ interface CalcResult {
 
 export default function IasCalculator() {
   const { merc } = useParams<{ merc: string }>();
-  const [weapons, setWeapons] = useState<string[]>([]);
-  const [weapon, setWeapon] = useState('');
+  const [selectedWeapon, setSelectedWeapon] = useState('');
   const [ias, setIas] = useState(0);
   const [result, setResult] = useState<CalcResult | null>(null);
-  const [loading, setLoading] = useState(true);
   const [calculating, setCalculating] = useState(false);
 
-  useEffect(() => {
-    api.getIasWeapons(merc!).then((r) => {
-      setWeapons(r);
-      if (r.length > 0) setWeapon(r[0]);
-      setLoading(false);
-    });
-  }, [merc]);
+  const { data: weapons = [], isLoading: loading } = useQuery<string[]>({
+    queryKey: ['ias-weapons', merc],
+    queryFn: () => api.getIasWeapons(merc!),
+  });
+
+  const weapon = selectedWeapon || weapons[0] || '';
 
   const calculate = async () => {
     if (!weapon) return;
@@ -54,7 +52,7 @@ export default function IasCalculator() {
           <label className="block text-sm text-gray-400 mb-1">武器類型</label>
           <select
             value={weapon}
-            onChange={(e) => setWeapon(e.target.value)}
+            onChange={(e) => setSelectedWeapon(e.target.value)}
             className="w-full px-3 py-2 text-sm border bg-black"
             style={{ borderColor: '#404040', color: '#00ffff' }}
           >

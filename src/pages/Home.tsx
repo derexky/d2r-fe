@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '../api';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 
@@ -9,15 +9,10 @@ interface Announcement {
 }
 
 export default function Home() {
-  const [items, setItems] = useState<Announcement[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    api.getAnnouncements().then((r) => {
-      setItems(r);
-      setLoading(false);
-    });
-  }, []);
+  const { data: items = [], isLoading: loading } = useQuery<Announcement[]>({
+    queryKey: ['announcements'],
+    queryFn: () => api.getAnnouncements(),
+  });
 
   if (loading) return <LoadingSpinner />;
 

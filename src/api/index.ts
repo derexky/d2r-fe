@@ -56,4 +56,11 @@ export const api = {
     contact: string;
     category?: string;
   }) => client.post('/trades', body).then((r) => r.data.data),
+
+  // Price stats
+  priceTrackedItems: (): Promise<string[]> =>
+    client.get('/prices/items').then((r) => r.data),
+  priceLatest: (item: string, ladder: boolean, mode: 'sc' | 'hc') =>
+    client.get('/prices/latest', { params: { item, ladder, mode } }).then((r) => r.data),
+
 };

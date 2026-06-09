@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { api } from '../../api';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
@@ -24,15 +24,11 @@ interface Build {
 
 export default function BuildDetail() {
   const { id } = useParams<{ id: string }>();
-  const [build, setBuild] = useState<Build | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    api.getBuild(Number(id)).then((r) => {
-      setBuild(r);
-      setLoading(false);
-    });
-  }, [id]);
+  const { data: build, isLoading: loading } = useQuery<Build>({
+    queryKey: ['build', id],
+    queryFn: () => api.getBuild(Number(id)),
+  });
 
   if (loading) return <LoadingSpinner />;
   if (!build) return <p className="text-red-400">找不到攻略</p>;
