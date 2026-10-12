@@ -37,7 +37,6 @@ import Alvl85 from './pages/mechanics/Alvl85';
 import Translations from './pages/misc/Translations';
 import TradeList from './pages/trade/TradeList';
 import TradeNew from './pages/trade/TradeNew';
-import TraderiePage from './pages/traderie/TraderiePage';
 import AuraList from './pages/skills/AuraList';
 
 export default function App() {
@@ -85,7 +84,6 @@ export default function App() {
           <Route path="translations" element={<Translations />} />
           <Route path="trade" element={<TradeList />} />
           <Route path="trade/new" element={<TradeNew />} />
-          <Route path="traderie" element={<TraderiePage />} />
           <Route path="about" element={<About />} />
         </Route>
       </Routes>
