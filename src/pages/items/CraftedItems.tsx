@@ -209,7 +209,7 @@ export default function CraftedItems() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: '#cc9966' }}>
+      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
         手工製作裝備
       </h1>
       <p className="text-sm text-gray-400 mb-4">
@@ -223,7 +223,7 @@ export default function CraftedItems() {
             onClick={() => setTab(c.key)}
             className="px-3 py-1 text-sm border transition-colors"
             style={{
-              borderColor: tab === c.key ? c.color : '#333',
+              borderColor: tab === c.key ? c.color : '#302c26',
               color: tab === c.key ? c.color : '#888',
               backgroundColor: tab === c.key ? '#110d00' : 'transparent',
             }}
@@ -233,7 +233,7 @@ export default function CraftedItems() {
         ))}
       </div>
 
-      <div className="mb-4 p-3 border max-w-lg" style={{ borderColor: '#1a1a1a' }}>
+      <div className="mb-4 p-3 border max-w-lg" style={{ borderColor: '#191714' }}>
         <h3 className="text-xs font-bold text-gray-400 mb-2">符文對應等級（角色等級決定所需符文）</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-4 gap-y-1">
           {RUNE_TABLE.map((r) => (
@@ -247,7 +247,7 @@ export default function CraftedItems() {
 
       <div className="space-y-4">
         {cat.recipes.map((recipe) => (
-          <div key={recipe.name} className="border p-3" style={{ borderColor: '#2a2a2a' }}>
+          <div key={recipe.name} className="border p-3" style={{ borderColor: '#2a2620' }}>
             <h2 className="text-sm font-bold mb-2" style={{ color: cat.color }}>
               {recipe.name}
             </h2>
@@ -281,7 +281,7 @@ export default function CraftedItems() {
               </div>
             </div>
 
-            <div className="mt-2 pt-2 border-t text-xs text-gray-600" style={{ borderColor: '#1a1a1a' }}>
+            <div className="mt-2 pt-2 border-t text-xs text-gray-600" style={{ borderColor: '#191714' }}>
               適用底材：{recipe.baseTypes[0]}
             </div>
           </div>

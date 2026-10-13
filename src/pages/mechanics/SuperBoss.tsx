@@ -72,7 +72,7 @@ function StatCell({ v, isRes = false }: { v: string | number; isRes?: boolean })
     <td
       className="px-2 py-0.5 text-center border"
       style={{
-        borderColor: '#1a1a1a',
+        borderColor: '#191714',
         color,
         fontWeight: immune ? 'bold' : undefined,
         background: immune ? '#1a0000' : undefined,
@@ -86,7 +86,7 @@ function StatCell({ v, isRes = false }: { v: string | number; isRes?: boolean })
 export default function SuperBoss() {
   return (
     <div className="text-sm">
-      <h1 className="text-xl font-bold mb-1" style={{ color: '#00ffff' }}>
+      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
         超強特殊頭目
       </h1>
       <p className="text-xs text-gray-500 mb-4">
@@ -97,24 +97,24 @@ export default function SuperBoss() {
       <div className="overflow-x-auto">
         <table className="text-xs border-collapse">
           <thead>
-            <tr style={{ background: '#0d0d0d' }}>
-              <th colSpan={2} className="px-2 py-1 border" style={{ borderColor: '#2a2a2a', color: '#888' }} />
-              <th colSpan={3} className="px-2 py-1 border text-center" style={{ borderColor: '#2a2a2a', color: '#c0a030' }}>基本資料</th>
-              <th colSpan={4} className="px-2 py-1 border text-center" style={{ borderColor: '#2a2a2a', color: '#6699cc' }}>近戰攻擊</th>
-              <th colSpan={4} className="px-2 py-1 border text-center" style={{ borderColor: '#2a2a2a', color: '#66cc66' }}>防禦</th>
-              <th colSpan={4} className="px-2 py-1 border text-center" style={{ borderColor: '#2a2a2a', color: '#cc6666' }}>元素抵抗</th>
-              <th colSpan={3} className="px-2 py-1 border text-center" style={{ borderColor: '#2a2a2a', color: '#aa88cc' }}>免疫突破</th>
+            <tr style={{ background: '#11100e' }}>
+              <th colSpan={2} className="px-2 py-1 border" style={{ borderColor: '#2a2620', color: '#888' }} />
+              <th colSpan={3} className="px-2 py-1 border text-center" style={{ borderColor: '#2a2620', color: '#c6a25a' }}>基本資料</th>
+              <th colSpan={4} className="px-2 py-1 border text-center" style={{ borderColor: '#2a2620', color: '#6699cc' }}>近戰攻擊</th>
+              <th colSpan={4} className="px-2 py-1 border text-center" style={{ borderColor: '#2a2620', color: '#66cc66' }}>防禦</th>
+              <th colSpan={4} className="px-2 py-1 border text-center" style={{ borderColor: '#2a2620', color: '#cc6666' }}>元素抵抗</th>
+              <th colSpan={3} className="px-2 py-1 border text-center" style={{ borderColor: '#2a2620', color: '#aa88cc' }}>免疫突破</th>
             </tr>
-            <tr style={{ background: '#111' }}>
+            <tr style={{ background: '#141210' }}>
               {[
-                ['名稱', '#c0a030'], ['說明', '#666'],
+                ['名稱', '#c6a25a'], ['說明', '#666'],
                 ['等級', '#888'], ['經驗值', '#888'], ['生命值', '#888'],
                 ['攻擊1', '#6699cc'], ['準確率1', '#6699cc'], ['攻擊2', '#6699cc'], ['準確率2', '#6699cc'],
                 ['物理防禦', '#66cc66'], ['格檔率%', '#66cc66'], ['物理DR%', '#66cc66'], ['魔法DR%', '#66cc66'],
                 ['火焰', '#ff6633'], ['冰冷', '#66ccff'], ['閃電', '#ffff44'], ['毒素', '#66ff66'],
                 ['效率%', '#aa88cc'], ['免疫', '#aa88cc'], ['冰效率%', '#aa88cc'],
               ].map(([label, color]) => (
-                <th key={label} className="px-2 py-1 border" style={{ borderColor: '#2a2a2a', color, whiteSpace: 'nowrap' }}>
+                <th key={label} className="px-2 py-1 border" style={{ borderColor: '#2a2620', color, whiteSpace: 'nowrap' }}>
                   {label}
                 </th>
               ))}
@@ -122,9 +122,9 @@ export default function SuperBoss() {
           </thead>
           <tbody>
             {BOSSES.map((b, i) => (
-              <tr key={b.name} style={{ background: i % 2 === 0 ? '#0a0a0a' : '#0f0f0f' }}>
-                <td className="px-2 py-1 border font-bold" style={{ borderColor: '#1a1a1a', color: '#e0c060', whiteSpace: 'nowrap' }}>{b.name}</td>
-                <td className="px-2 py-1 border" style={{ borderColor: '#1a1a1a', color: '#555', whiteSpace: 'nowrap', fontSize: '0.65rem' }}>{b.note}</td>
+              <tr key={b.name} style={{ background: i % 2 === 0 ? '#11100e' : '#0f0f0f' }}>
+                <td className="px-2 py-1 border font-bold" style={{ borderColor: '#191714', color: '#e0c060', whiteSpace: 'nowrap' }}>{b.name}</td>
+                <td className="px-2 py-1 border" style={{ borderColor: '#191714', color: '#555', whiteSpace: 'nowrap', fontSize: '0.65rem' }}>{b.note}</td>
                 <StatCell v={b.lv} />
                 <StatCell v={b.xp.toLocaleString()} />
                 <StatCell v={b.hp} />
@@ -141,7 +141,7 @@ export default function SuperBoss() {
                 <StatCell v={b.lr} isRes />
                 <StatCell v={b.pr} isRes />
                 <StatCell v={b.eff} />
-                <td className="px-2 py-0.5 text-center border" style={{ borderColor: '#1a1a1a', color: b.immune === '－' ? '#333' : '#ff6666', whiteSpace: 'nowrap' }}>
+                <td className="px-2 py-0.5 text-center border" style={{ borderColor: '#191714', color: b.immune === '－' ? '#302c26' : '#ff6666', whiteSpace: 'nowrap' }}>
                   {b.immune}
                 </td>
                 <StatCell v={b.ceff} />

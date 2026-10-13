@@ -36,7 +36,7 @@ function AuraCard({ aura }: { aura: Aura }) {
   return (
     <div
       className="flex flex-col items-center gap-1 p-2"
-      style={{ border: '1px solid #2a2a2a', backgroundColor: '#0d0d0d' }}
+      style={{ border: '1px solid #2a2620', backgroundColor: '#11100e' }}
     >
       <span className="text-sm font-bold" style={{ color: '#cc66ff' }}>{aura.name}</span>
       <img src={aura.img} alt={aura.name} className="w-28 h-28 object-contain" />
@@ -48,7 +48,7 @@ function AuraCard({ aura }: { aura: Aura }) {
 function AuraSection({ title, auras }: { title: string; auras: Aura[] }) {
   return (
     <section className="mb-8">
-      <h2 className="text-base font-bold mb-3" style={{ color: '#c0a030' }}>{title}</h2>
+      <h2 className="text-base font-bold mb-3" style={{ color: '#c6a25a' }}>{title}</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
         {auras.map((a) => <AuraCard key={a.name} aura={a} />)}
       </div>
@@ -59,7 +59,7 @@ function AuraSection({ title, auras }: { title: string; auras: Aura[] }) {
 export default function AuraList() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: '#cc66ff' }}>靈氣特效對照</h1>
+      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>靈氣特效對照</h1>
       <p className="text-xs text-gray-500 mb-6">聖騎士靈氣特效與技能名稱對照表</p>
       <AuraSection title="攻擊靈氣" auras={OFFENSIVE} />
       <AuraSection title="防禦靈氣" auras={DEFENSIVE} />

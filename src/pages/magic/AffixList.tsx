@@ -34,7 +34,7 @@ export default function AffixList() {
 
   return (
     <div className="text-sm">
-      <h1 className="text-xl font-bold mb-1" style={{ color: '#00ffff' }}>
+      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
         魔法字首字尾
       </h1>
       <p className="text-xs text-gray-500 mb-3">
@@ -49,7 +49,7 @@ export default function AffixList() {
             onClick={() => { setSrc(s); setCat(''); }}
             className="px-3 py-1 text-xs border transition-colors"
             style={{
-              borderColor: src === s ? '#cc9900' : '#2a2a2a',
+              borderColor: src === s ? '#cc9900' : '#2a2620',
               color: src === s ? '#ffcc00' : '#666',
               background: src === s ? '#1a1400' : 'transparent',
             }}
@@ -68,7 +68,7 @@ export default function AffixList() {
             onClick={() => { setTab(t); setCat(''); }}
             className="px-3 py-1 text-xs border transition-colors"
             style={{
-              borderColor: tab === t ? '#00cccc' : '#2a2a2a',
+              borderColor: tab === t ? '#00cccc' : '#2a2620',
               color: tab === t ? '#00ffff' : '#888',
               background: tab === t ? '#001a1a' : 'transparent',
             }}
@@ -85,13 +85,13 @@ export default function AffixList() {
           onChange={e => setSearch(e.target.value)}
           placeholder="搜尋名稱或屬性…"
           className="px-2 py-1 text-xs border outline-none"
-          style={{ background: '#0a0a0a', borderColor: '#2a2a2a', color: '#e0e0e0', width: 200 }}
+          style={{ background: '#11100e', borderColor: '#2a2620', color: '#e0e0e0', width: 200 }}
         />
         <select
           value={cat}
           onChange={e => setCat(e.target.value)}
           className="px-2 py-1 text-xs border outline-none"
-          style={{ background: '#0a0a0a', borderColor: '#2a2a2a', color: cat ? '#e0e0e0' : '#666' }}
+          style={{ background: '#11100e', borderColor: '#2a2620', color: cat ? '#e0e0e0' : '#666' }}
         >
           <option value="">全部類別</option>
           {cats.map(c => <option key={c} value={c}>{c}</option>)}
@@ -103,20 +103,20 @@ export default function AffixList() {
       <div className="overflow-x-auto">
         <table className="text-xs border-collapse w-full">
           <thead>
-            <tr style={{ background: '#111' }}>
-              <th className="px-2 py-1 text-left border" style={{ borderColor: '#2a2a2a', color: '#c0a030', width: 110 }}>類別</th>
-              <th className="px-2 py-1 text-left border" style={{ borderColor: '#2a2a2a', color: '#c0a030', width: 160 }}>名稱</th>
-              <th className="px-2 py-1 text-left border" style={{ borderColor: '#2a2a2a', color: '#c0a030' }}>屬性</th>
-              <th className="px-2 py-1 text-left border" style={{ borderColor: '#2a2a2a', color: '#888', width: 220 }}>物品 [ilvl]</th>
+            <tr style={{ background: '#141210' }}>
+              <th className="px-2 py-1 text-left border" style={{ borderColor: '#2a2620', color: '#c6a25a', width: 110 }}>類別</th>
+              <th className="px-2 py-1 text-left border" style={{ borderColor: '#2a2620', color: '#c6a25a', width: 160 }}>名稱</th>
+              <th className="px-2 py-1 text-left border" style={{ borderColor: '#2a2620', color: '#c6a25a' }}>屬性</th>
+              <th className="px-2 py-1 text-left border" style={{ borderColor: '#2a2620', color: '#888', width: 220 }}>物品 [ilvl]</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((a, i) => (
-              <tr key={i} style={{ background: i % 2 === 0 ? '#0a0a0a' : '#0f0f0f' }}>
-                <td className="px-2 py-0.5 border" style={{ borderColor: '#1a1a1a', color: '#888' }}>{a.func}</td>
-                <td className="px-2 py-0.5 border" style={{ borderColor: '#1a1a1a', color: '#e0c060' }}>{a.name}</td>
-                <td className="px-2 py-0.5 border" style={{ borderColor: '#1a1a1a', color: '#00ccaa' }}>{a.stat}</td>
-                <td className="px-2 py-0.5 border" style={{ borderColor: '#1a1a1a', color: '#666' }}>{a.items ?? ''}</td>
+              <tr key={i} style={{ background: i % 2 === 0 ? '#11100e' : '#0f0f0f' }}>
+                <td className="px-2 py-0.5 border" style={{ borderColor: '#191714', color: '#888' }}>{a.func}</td>
+                <td className="px-2 py-0.5 border" style={{ borderColor: '#191714', color: '#e0c060' }}>{a.name}</td>
+                <td className="px-2 py-0.5 border" style={{ borderColor: '#191714', color: '#00ccaa' }}>{a.stat}</td>
+                <td className="px-2 py-0.5 border" style={{ borderColor: '#191714', color: '#666' }}>{a.items ?? ''}</td>
               </tr>
             ))}
           </tbody>

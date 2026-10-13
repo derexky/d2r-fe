@@ -96,7 +96,7 @@ const GEM_GROUPS: GemGroup[] = [
 export default function GemList() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: '#c0a030' }}>
+      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
         寶石介紹
       </h1>
 
@@ -109,7 +109,7 @@ export default function GemList() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #333' }}>
+                  <tr style={{ borderBottom: '1px solid #302c26' }}>
                     <th className="text-left py-1 px-2 text-gray-400 font-normal">圖</th>
                     <th className="text-left py-1 px-2 text-gray-400 font-normal">名稱</th>
                     <th className="text-center py-1 px-2 text-gray-400 font-normal">需求等級</th>
@@ -122,7 +122,7 @@ export default function GemList() {
                   {group.gems.map((gem, i) => (
                     <tr
                       key={gem.img}
-                      style={{ backgroundColor: i % 2 === 1 ? '#0d0d0d' : 'transparent', borderBottom: '1px solid #1a1a1a' }}
+                      style={{ backgroundColor: i % 2 === 1 ? '#11100e' : 'transparent', borderBottom: '1px solid #191714' }}
                     >
                       <td className="py-1 px-2">
                         <img src={`/assets/img/${gem.img}`} alt={gem.name} className="w-8 h-8 object-contain" />

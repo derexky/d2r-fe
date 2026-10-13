@@ -18,7 +18,7 @@ const CONTENT_SECTIONS = [
 export default function About() {
   return (
     <div className="max-w-2xl text-sm">
-      <h1 className="text-xl font-bold mb-4" style={{ color: '#808000' }}>
+      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
         關於易牙居
       </h1>
 
@@ -28,7 +28,7 @@ export default function About() {
         本站為其精神延續，資料已更新至《暗黑破壞神 II：再生》（D2R）版本。
       </p>
 
-      <div className="mb-6 border p-3" style={{ borderColor: '#2a2a2a' }}>
+      <div className="mb-6 border p-3" style={{ borderColor: '#2a2620' }}>
         <h2 className="text-xs font-bold text-gray-400 mb-2">基本資訊</h2>
         <dl className="space-y-1">
           {SITE_INFO.map(({ label, value }) => (
@@ -43,8 +43,8 @@ export default function About() {
       <h2 className="text-sm font-bold text-gray-300 mb-3">收錄內容</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-6">
         {CONTENT_SECTIONS.map(({ icon, title, desc }) => (
-          <div key={title} className="border p-2" style={{ borderColor: '#1a1a1a' }}>
-            <p className="text-xs font-bold mb-1" style={{ color: '#c0a030' }}>
+          <div key={title} className="border p-2" style={{ borderColor: '#191714' }}>
+            <p className="text-xs font-bold mb-1" style={{ color: '#c6a25a' }}>
               {icon} {title}
             </p>
             <p className="text-xs text-gray-400">{desc}</p>

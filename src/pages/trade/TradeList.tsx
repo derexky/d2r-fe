@@ -60,7 +60,7 @@ export default function TradeList() {
           marginBottom: '12px',
         }}
       >
-        <h1 className="text-xl font-bold" style={{ color: '#808000' }}>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--gold)' }}>
           交易市集
         </h1>
         <Link
@@ -86,7 +86,7 @@ export default function TradeList() {
             onClick={() => setCategory(c.value)}
             style={{
               background: category === c.value ? '#1a1400' : 'transparent',
-              border: `1px solid ${category === c.value ? '#808000' : '#333'}`,
+              border: `1px solid ${category === c.value ? '#808000' : '#302c26'}`,
               color: category === c.value ? '#808000' : '#666',
               padding: '2px 10px',
               borderRadius: '10px',
@@ -152,8 +152,8 @@ export default function TradeList() {
                 onClick={() => copyContact(trade.contact)}
                 title={trade.contact}
                 style={{
-                  background: '#1a1a1a',
-                  border: '1px solid #333',
+                  background: '#191714',
+                  border: '1px solid #302c26',
                   color: '#aaa',
                   padding: '2px 8px',
                   borderRadius: '2px',

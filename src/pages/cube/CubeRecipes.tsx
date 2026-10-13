@@ -110,7 +110,7 @@ function RecipeTable({ recipes }: { recipes: Recipe[] }) {
     <div className="overflow-x-auto">
       <table className="w-full text-sm border-collapse">
         <thead>
-          <tr style={{ borderBottom: '1px solid #333' }}>
+          <tr style={{ borderBottom: '1px solid #302c26' }}>
             <th className="text-left py-2 px-3 text-gray-400 font-normal w-1/2">材料</th>
             <th className="text-left py-2 px-3 text-gray-400 font-normal">結果</th>
           </tr>
@@ -119,11 +119,11 @@ function RecipeTable({ recipes }: { recipes: Recipe[] }) {
           {recipes.map((r, i) => (
             <tr
               key={i}
-              style={{ backgroundColor: i % 2 === 1 ? '#0d0d0d' : 'transparent', borderBottom: '1px solid #1a1a1a' }}
+              style={{ backgroundColor: i % 2 === 1 ? '#11100e' : 'transparent', borderBottom: '1px solid #191714' }}
             >
               <td className="py-2 px-3 text-gray-300">{r.input}</td>
               <td className="py-2 px-3">
-                <span style={{ color: '#c0a030' }}>{r.output}</span>
+                <span style={{ color: '#c6a25a' }}>{r.output}</span>
                 {r.note && (
                   <span className="text-xs text-gray-500 ml-2">（{r.note}）</span>
                 )}
@@ -141,7 +141,7 @@ export default function CubeRecipes() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: '#c0a030' }}>
+      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
         方塊合成公式
       </h1>
 
@@ -152,8 +152,8 @@ export default function CubeRecipes() {
             onClick={() => setTab(t.key)}
             className="px-4 py-1 text-sm border transition-colors"
             style={{
-              borderColor: tab === t.key ? '#c0a030' : '#333',
-              color: tab === t.key ? '#c0a030' : '#888',
+              borderColor: tab === t.key ? '#c6a25a' : '#302c26',
+              color: tab === t.key ? '#c6a25a' : '#888',
               backgroundColor: tab === t.key ? '#1a1200' : 'transparent',
             }}
           >

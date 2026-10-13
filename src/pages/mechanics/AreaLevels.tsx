@@ -154,7 +154,7 @@ const ACTS = [
 ];
 
 function levelColor(v: string | number) {
-  if (v === '－') return '#333';
+  if (v === '－') return '#302c26';
   const n = Number(v);
   if (n >= 85) return '#ff4444';
   if (n >= 80) return '#ff8844';
@@ -169,7 +169,7 @@ export default function AreaLevels() {
 
   return (
     <div className="text-sm">
-      <h1 className="text-xl font-bold mb-1" style={{ color: '#808000' }}>
+      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
         場景等級
       </h1>
       <p className="text-xs text-gray-500 mb-4">
@@ -183,8 +183,8 @@ export default function AreaLevels() {
             onClick={() => setAct(i)}
             className="px-3 py-1 text-xs border transition-colors"
             style={{
-              borderColor: act === i ? '#808000' : '#2a2a2a',
-              color: act === i ? '#c0a030' : '#666',
+              borderColor: act === i ? '#808000' : '#2a2620',
+              color: act === i ? '#c6a25a' : '#666',
               background: act === i ? '#1a1a00' : 'transparent',
             }}
           >
@@ -196,12 +196,12 @@ export default function AreaLevels() {
       <div className="overflow-x-auto max-w-lg">
         <table className="text-xs border-collapse w-full">
         <thead>
-          <tr style={{ background: '#111' }}>
+          <tr style={{ background: '#141210' }}>
             {['地圖', '普通', '惡夢', '地獄'].map((h) => (
               <th
                 key={h}
                 className="px-3 py-1 text-left border"
-                style={{ borderColor: '#2a2a2a', color: '#808000' }}
+                style={{ borderColor: '#2a2620', color: '#808000' }}
               >
                 {h}
               </th>
@@ -212,10 +212,10 @@ export default function AreaLevels() {
           {areas.map(([name, n, nm, h], i) => {
             const isHub = n === '－';
             return (
-              <tr key={i} style={{ background: i % 2 === 0 ? '#0a0a0a' : '#111' }}>
+              <tr key={i} style={{ background: i % 2 === 0 ? '#11100e' : '#141210' }}>
                 <td
                   className="px-3 py-0.5 border"
-                  style={{ borderColor: '#1a1a1a', color: isHub ? '#555' : '#ccc' }}
+                  style={{ borderColor: '#191714', color: isHub ? '#555' : '#ccc' }}
                 >
                   {name}
                 </td>
@@ -223,7 +223,7 @@ export default function AreaLevels() {
                   <td
                     key={j}
                     className="px-3 py-0.5 text-center border font-mono"
-                    style={{ borderColor: '#1a1a1a', color: levelColor(v) }}
+                    style={{ borderColor: '#191714', color: levelColor(v) }}
                   >
                     {v}
                   </td>

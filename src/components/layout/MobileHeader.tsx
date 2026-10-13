@@ -6,7 +6,7 @@ export default function MobileHeader({ onMenuClick }: Props) {
   return (
     <header
       className="flex md:hidden items-center justify-between shrink-0 px-4 py-3 border-b"
-      style={{ backgroundColor: '#0a0a0a', borderColor: '#404040' }}
+      style={{ backgroundColor: '#11100e', borderColor: '#3a352d' }}
     >
       <button
         onClick={onMenuClick}
@@ -15,8 +15,8 @@ export default function MobileHeader({ onMenuClick }: Props) {
       >
         ☰
       </button>
-      <span className="font-bold text-base" style={{ color: '#808000' }}>
-        易牙居
+      <span className="font-bold text-base brand">
+        <span>◆</span>易牙居
       </span>
       <div className="w-9" />
     </header>

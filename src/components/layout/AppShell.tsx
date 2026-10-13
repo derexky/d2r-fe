@@ -12,7 +12,7 @@ export default function AppShell() {
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
   return (
-    <div className="flex flex-col md:flex-row h-[100dvh] w-full overflow-hidden bg-black text-white">
+    <div className="flex flex-col md:flex-row h-[100dvh] w-full overflow-hidden">
       <div className="hidden md:contents">
         <Sidebar />
       </div>

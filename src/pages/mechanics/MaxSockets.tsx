@@ -27,7 +27,7 @@ const DATA: Row[] = [
 export default function MaxSockets() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: '#ffaa00' }}>
+      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
         最大孔數
       </h1>
       <p className="text-sm text-gray-400 mb-4">
@@ -35,9 +35,9 @@ export default function MaxSockets() {
       </p>
 
       <div className="overflow-x-auto">
-        <table className="text-sm border-collapse" style={{ borderColor: '#333' }}>
+        <table className="text-sm border-collapse" style={{ borderColor: '#302c26' }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid #444' }}>
+            <tr style={{ borderBottom: '1px solid #423c33' }}>
               <th className="text-left px-4 py-2 text-gray-400 font-normal">裝備類型</th>
               <th className="text-center px-4 py-2 text-gray-400 font-normal">ilvl 1–25</th>
               <th className="text-center px-4 py-2 text-gray-400 font-normal">ilvl 26–40</th>
@@ -48,7 +48,7 @@ export default function MaxSockets() {
             {DATA.map(([name, a, b, c], i) => (
               <tr
                 key={i}
-                style={{ borderBottom: '1px solid #2a2a2a' }}
+                style={{ borderBottom: '1px solid #2a2620' }}
                 className="hover:bg-white/5 transition-colors"
               >
                 <td className="px-4 py-2 text-gray-200">{name}</td>

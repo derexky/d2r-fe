@@ -33,14 +33,14 @@ const WEAPON_CATEGORIES = [
 function CategoryGrid({ title, items }: { title: string; items: { label: string; value: string }[] }) {
   return (
     <div className="mb-6">
-      <h2 className="text-sm font-bold mb-2" style={{ color: '#c0a030' }}>{title}</h2>
+      <h2 className="text-sm font-bold mb-2" style={{ color: '#c6a25a' }}>{title}</h2>
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
         {items.map((c) => (
           <Link
             key={c.value}
             to={`/items/base/${c.value}`}
             className="block px-3 py-2 text-sm text-center border hover:border-yellow-600 transition-colors"
-            style={{ borderColor: '#404040', color: '#808000' }}
+            style={{ borderColor: '#3a352d', color: '#808000' }}
           >
             {c.label}
           </Link>
@@ -53,7 +53,7 @@ function CategoryGrid({ title, items }: { title: string; items: { label: string;
 export default function BaseItemIndex() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: '#808000' }}>
+      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
         基礎裝備
       </h1>
       <CategoryGrid title="防具" items={ARMOR_CATEGORIES} />

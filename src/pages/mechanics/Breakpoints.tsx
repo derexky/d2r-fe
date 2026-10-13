@@ -74,7 +74,7 @@ type TableProps = { cols1: string[]; cols2?: string[]; data: Row[]; };
 function BpTable({ cols1, cols2, data }: TableProps) {
   return (
     <div className="overflow-x-auto">
-      <table className="text-xs border-collapse" style={{ borderColor: '#222' }}>
+      <table className="text-xs border-collapse" style={{ borderColor: '#24211c' }}>
         <thead>
           <tr>
             {cols1.map((h, i) => (
@@ -82,9 +82,9 @@ function BpTable({ cols1, cols2, data }: TableProps) {
                 key={i}
                 className="px-2 py-1 text-center border"
                 style={{
-                  borderColor: '#2a2a2a',
-                  color: h === '框' ? '#888' : '#c0a030',
-                  background: '#111',
+                  borderColor: '#2a2620',
+                  color: h === '框' ? '#888' : '#c6a25a',
+                  background: '#141210',
                   minWidth: i === 0 ? 32 : 52,
                 }}
               >
@@ -98,7 +98,7 @@ function BpTable({ cols1, cols2, data }: TableProps) {
                 <th
                   key={i}
                   className="px-2 py-1 text-center border"
-                  style={{ borderColor: '#2a2a2a', color: '#666', background: '#0d0d0d' }}
+                  style={{ borderColor: '#2a2620', color: '#666', background: '#11100e' }}
                 >
                   {h}
                 </th>
@@ -110,7 +110,7 @@ function BpTable({ cols1, cols2, data }: TableProps) {
           {data.map((row, ri) => {
             const frame = row[0] as number;
             return (
-              <tr key={ri} style={{ background: ri % 2 === 0 ? '#0a0a0a' : '#111' }}>
+              <tr key={ri} style={{ background: ri % 2 === 0 ? '#11100e' : '#141210' }}>
                 {row.map((cell, ci) => {
                   const isEmpty = cell === '';
                   const val = isEmpty ? '' : String(cell);
@@ -120,8 +120,8 @@ function BpTable({ cols1, cols2, data }: TableProps) {
                       key={ci}
                       className="px-2 py-0.5 text-center border"
                       style={{
-                        borderColor: '#1a1a1a',
-                        color: ci === 0 ? '#888' : isZero ? '#00ffcc' : isEmpty ? '#1a1a1a' : '#e0e0e0',
+                        borderColor: '#191714',
+                        color: ci === 0 ? '#888' : isZero ? '#00ffcc' : isEmpty ? '#191714' : '#e0e0e0',
                         fontWeight: isZero ? 'bold' : undefined,
                       }}
                     >
@@ -145,7 +145,7 @@ export default function Breakpoints() {
 
   return (
     <div className="text-sm">
-      <h1 className="text-xl font-bold mb-1" style={{ color: '#00ffff' }}>
+      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
         攻速斷點表
       </h1>
       <p className="text-xs text-gray-500 mb-4">
@@ -159,7 +159,7 @@ export default function Breakpoints() {
             onClick={() => setTab(i)}
             className="px-3 py-1 text-xs border transition-colors"
             style={{
-              borderColor: tab === i ? '#00cccc' : '#2a2a2a',
+              borderColor: tab === i ? '#00cccc' : '#2a2620',
               color: tab === i ? '#00ffff' : '#888',
               background: tab === i ? '#001a1a' : 'transparent',
             }}

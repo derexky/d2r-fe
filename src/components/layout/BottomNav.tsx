@@ -12,8 +12,8 @@ export default function BottomNav() {
     <nav
       className="flex md:hidden shrink-0 border-t"
       style={{
-        backgroundColor: '#0a0a0a',
-        borderColor: '#404040',
+        backgroundColor: '#11100e',
+        borderColor: '#3a352d',
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}
     >

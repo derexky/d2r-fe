@@ -339,7 +339,7 @@ export default function Alvl85() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: '#ffaa00' }}>
+      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
         85 場景怪物免疫表
       </h1>
       <p className="text-sm text-gray-400 mb-4">
@@ -352,7 +352,7 @@ export default function Alvl85() {
             onClick={() => setAct(0)}
             className="px-3 py-1 text-xs border transition-colors"
             style={{
-              borderColor: act === 0 ? '#ffaa00' : '#444',
+              borderColor: act === 0 ? '#ffaa00' : '#423c33',
               color: act === 0 ? '#ffaa00' : '#888',
             }}
           >
@@ -364,7 +364,7 @@ export default function Alvl85() {
               onClick={() => setAct(a)}
               className="px-3 py-1 text-xs border transition-colors"
               style={{
-                borderColor: act === a ? '#ffaa00' : '#444',
+                borderColor: act === a ? '#ffaa00' : '#423c33',
                 color: act === a ? '#ffaa00' : '#888',
               }}
             >
@@ -380,7 +380,7 @@ export default function Alvl85() {
               onClick={() => setTypeFilter(t)}
               className="px-3 py-1 text-xs border transition-colors"
               style={{
-                borderColor: typeFilter === t ? (t ? TYPE_COLOR[t as Type] : '#ffaa00') : '#444',
+                borderColor: typeFilter === t ? (t ? TYPE_COLOR[t as Type] : '#ffaa00') : '#423c33',
                 color: typeFilter === t ? (t ? TYPE_COLOR[t as Type] : '#ffaa00') : '#888',
               }}
             >
@@ -392,20 +392,20 @@ export default function Alvl85() {
 
       <div className="space-y-4">
         {filtered.map((area, i) => (
-          <div key={i} className="border" style={{ borderColor: '#333' }}>
-            <div className="px-3 py-2" style={{ background: '#1a1a1a' }}>
+          <div key={i} className="border" style={{ borderColor: '#302c26' }}>
+            <div className="px-3 py-2" style={{ background: '#191714' }}>
               <span className="font-bold" style={{ color: '#ffcc44' }}>{area.n}</span>
               {area.loc && (
                 <span className="text-xs ml-2" style={{ color: '#666' }}>（{area.loc}）</span>
               )}
               <span
                 className="text-xs ml-2 px-1"
-                style={{ color: '#888', border: '1px solid #333' }}
+                style={{ color: '#888', border: '1px solid #302c26' }}
               >
                 第{area.act}章
               </span>
             </div>
-            <div className="divide-y" style={{ borderColor: '#222' }}>
+            <div className="divide-y" style={{ borderColor: '#24211c' }}>
               {area.m.map((m, j) => (
                 <div key={j} className="px-3 py-2 flex flex-wrap items-center gap-2 text-sm hover:bg-white/5">
                   <span className="text-gray-200 min-w-[120px]">{m.n}</span>

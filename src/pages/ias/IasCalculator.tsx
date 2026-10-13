@@ -43,7 +43,7 @@ export default function IasCalculator() {
 
   return (
     <div className="max-w-lg">
-      <h1 className="text-xl font-bold mb-4" style={{ color: '#00ffff' }}>
+      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
         IAS 計算 — {MERC_LABELS[merc!] || merc}
       </h1>
 
@@ -54,7 +54,7 @@ export default function IasCalculator() {
             value={weapon}
             onChange={(e) => setSelectedWeapon(e.target.value)}
             className="w-full px-3 py-2 text-sm border bg-black"
-            style={{ borderColor: '#404040', color: '#00ffff' }}
+            style={{ borderColor: '#3a352d', color: '#00ffff' }}
           >
             {weapons.map((w) => (
               <option key={w} value={w}>{w}</option>
@@ -73,7 +73,7 @@ export default function IasCalculator() {
             value={ias}
             onChange={(e) => setIas(Number(e.target.value))}
             className="w-full px-3 py-2 text-sm border bg-black"
-            style={{ borderColor: '#404040', color: '#ffffff' }}
+            style={{ borderColor: '#3a352d', color: '#ffffff' }}
           />
         </div>
 

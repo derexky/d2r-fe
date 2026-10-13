@@ -17,7 +17,7 @@ export default function RareNames() {
 
   return (
     <div className="text-sm">
-      <h1 className="text-xl font-bold mb-1" style={{ color: '#00ffff' }}>
+      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
         稀有裝備名稱
       </h1>
       <p className="text-xs text-gray-500 mb-3">
@@ -31,7 +31,7 @@ export default function RareNames() {
             onClick={() => { setTab(t); setSearch(''); }}
             className="px-3 py-1 text-xs border transition-colors"
             style={{
-              borderColor: tab === t ? '#00cccc' : '#2a2a2a',
+              borderColor: tab === t ? '#00cccc' : '#2a2620',
               color: tab === t ? '#00ffff' : '#888',
               background: tab === t ? '#001a1a' : 'transparent',
             }}
@@ -47,7 +47,7 @@ export default function RareNames() {
           onChange={e => setSearch(e.target.value)}
           placeholder="搜尋英文或中文…"
           className="px-2 py-1 text-xs border outline-none"
-          style={{ background: '#0a0a0a', borderColor: '#2a2a2a', color: '#e0e0e0', width: 200 }}
+          style={{ background: '#11100e', borderColor: '#2a2620', color: '#e0e0e0', width: 200 }}
         />
         <span className="text-xs self-center" style={{ color: '#666' }}>{rows.length} 筆</span>
       </div>
@@ -55,16 +55,16 @@ export default function RareNames() {
       <div className="overflow-x-auto">
         <table className="text-xs border-collapse" style={{ minWidth: 280 }}>
           <thead>
-            <tr style={{ background: '#111' }}>
-              <th className="px-3 py-1 text-left border" style={{ borderColor: '#2a2a2a', color: '#c0a030', width: 160 }}>英文</th>
-              <th className="px-3 py-1 text-left border" style={{ borderColor: '#2a2a2a', color: '#c0a030', width: 120 }}>中文</th>
+            <tr style={{ background: '#141210' }}>
+              <th className="px-3 py-1 text-left border" style={{ borderColor: '#2a2620', color: '#c6a25a', width: 160 }}>英文</th>
+              <th className="px-3 py-1 text-left border" style={{ borderColor: '#2a2620', color: '#c6a25a', width: 120 }}>中文</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((r, i) => (
-              <tr key={i} style={{ background: i % 2 === 0 ? '#0a0a0a' : '#0f0f0f' }}>
-                <td className="px-3 py-0.5 border" style={{ borderColor: '#1a1a1a', color: '#e0c060' }}>{r.en}</td>
-                <td className="px-3 py-0.5 border" style={{ borderColor: '#1a1a1a', color: '#e0e0e0' }}>{r.zh}</td>
+              <tr key={i} style={{ background: i % 2 === 0 ? '#11100e' : '#0f0f0f' }}>
+                <td className="px-3 py-0.5 border" style={{ borderColor: '#191714', color: '#e0c060' }}>{r.en}</td>
+                <td className="px-3 py-0.5 border" style={{ borderColor: '#191714', color: '#e0e0e0' }}>{r.zh}</td>
               </tr>
             ))}
           </tbody>

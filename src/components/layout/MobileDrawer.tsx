@@ -32,14 +32,14 @@ export default function MobileDrawer({ open, onClose }: Props) {
       />
       <div
         className="fixed inset-y-0 left-0 w-64 z-50 flex flex-col overflow-y-auto"
-        style={{ backgroundColor: '#0a0a0a', borderRight: '1px solid #404040' }}
+        style={{ backgroundColor: '#11100e', borderRight: '1px solid #3a352d' }}
       >
         <div
           className="flex items-center justify-between px-4 py-4 shrink-0 border-b"
-          style={{ borderColor: '#404040' }}
+          style={{ borderColor: '#3a352d' }}
         >
-          <span className="font-bold text-lg" style={{ color: '#808000' }}>
-            易牙居
+          <span className="font-bold text-lg brand">
+        <span>◆</span>易牙居
           </span>
           <button
             onClick={onClose}

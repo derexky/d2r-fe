@@ -41,6 +41,7 @@ const NAV: NavItem[] = [
       { label: '聖騎士', to: '/builds/paladin' },
       { label: '德魯伊', to: '/builds/druid' },
       { label: '刺客', to: '/builds/assassin' },
+      { label: '術士', to: '/builds/warlock' },
     ],
   },
   {
@@ -87,7 +88,7 @@ function NavNode({ item, depth = 0 }: { item: NavItem; depth?: number }) {
         <button
           onClick={() => setOpen((o) => !o)}
           className="w-full text-left px-2 py-1 text-sm font-bold hover:text-yellow-400 transition-colors"
-          style={{ paddingLeft: `${8 + indent}px`, color: '#c0a030' }}
+          style={{ paddingLeft: `${8 + indent}px`, color: '#c6a25a' }}
         >
           {open ? '▾' : '▸'} {item.label}
         </button>
@@ -106,7 +107,7 @@ function NavNode({ item, depth = 0 }: { item: NavItem; depth?: number }) {
     <NavLink
       to={item.to!}
       className={({ isActive }) =>
-        `block text-sm py-1 hover:text-yellow-300 transition-colors ${isActive ? 'text-yellow-300 font-bold' : 'text-gray-300'}`
+        `block text-sm py-1 hover:text-yellow-300 transition-colors border-l-2 ${isActive ? 'text-yellow-300 font-bold border-[var(--red)] bg-[#1a1512]' : 'text-gray-300 border-transparent'}`
       }
       style={{ paddingLeft: `${20 + indent}px` }}
     >

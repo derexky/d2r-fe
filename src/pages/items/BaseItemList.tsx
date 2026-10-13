@@ -61,7 +61,7 @@ export default function BaseItemList() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-3" style={{ color: '#808000' }}>
+      <h1 className="text-xl font-bold mb-3" style={{ color: 'var(--gold)' }}>
         基礎裝備 — {GID_LABELS[gid!] ?? gid}
       </h1>
 
@@ -72,7 +72,7 @@ export default function BaseItemList() {
             onClick={() => setGrade(g)}
             className="px-3 py-1 text-sm border transition-colors"
             style={{
-              borderColor: grade === g ? '#808000' : '#404040',
+              borderColor: grade === g ? '#808000' : '#3a352d',
               color: grade === g ? '#808000' : '#888',
               backgroundColor: grade === g ? '#1a1400' : 'transparent',
             }}
@@ -90,7 +90,7 @@ export default function BaseItemList() {
             <div
               key={item.id}
               className="border p-3 flex gap-3"
-              style={{ borderColor: '#404040' }}
+              style={{ borderColor: '#3a352d' }}
             >
               {item.image_path && (
                 <img

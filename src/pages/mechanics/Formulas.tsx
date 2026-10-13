@@ -107,20 +107,20 @@ const SECTIONS: Section[] = [
 export default function Formulas() {
   return (
     <div className="text-sm max-w-2xl">
-      <h1 className="text-xl font-bold mb-4" style={{ color: '#808000' }}>
+      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
         遊戲公式
       </h1>
 
       <div className="space-y-6">
         {SECTIONS.map((sec) => (
           <div key={sec.title}>
-            <h2 className="text-xs font-bold text-gray-400 mb-2 border-b pb-1" style={{ borderColor: '#2a2a2a' }}>
+            <h2 className="text-xs font-bold text-gray-400 mb-2 border-b pb-1" style={{ borderColor: '#2a2620' }}>
               {sec.title}
             </h2>
             <div className="space-y-2">
               {sec.items.map((item) => (
-                <div key={item.label} className="border p-2" style={{ borderColor: '#1a1a1a' }}>
-                  <p className="text-xs font-bold mb-1" style={{ color: '#c0a030' }}>
+                <div key={item.label} className="border p-2" style={{ borderColor: '#191714' }}>
+                  <p className="text-xs font-bold mb-1" style={{ color: '#c6a25a' }}>
                     {item.label}
                   </p>
                   <p className="text-xs font-mono text-gray-300">{item.formula}</p>

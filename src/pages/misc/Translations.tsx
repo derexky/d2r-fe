@@ -35,7 +35,7 @@ export default function Translations() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: '#ffaa00' }}>
+      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
         新舊繁中翻譯對照表
       </h1>
       <p className="text-sm text-gray-400 mb-4">
@@ -50,7 +50,7 @@ export default function Translations() {
             onClick={() => { setTab(t.id); setSearch(''); }}
             className="px-3 py-1 text-xs border transition-colors"
             style={{
-              borderColor: tab === t.id ? '#ffaa00' : '#444',
+              borderColor: tab === t.id ? '#ffaa00' : '#423c33',
               color: tab === t.id ? '#ffaa00' : '#888',
               background: tab === t.id ? '#2a2000' : 'transparent',
             }}
@@ -68,7 +68,7 @@ export default function Translations() {
           onChange={e => setSearch(e.target.value)}
           placeholder="搜尋（英文、舊譯、新譯）"
           className="px-3 py-1 text-sm bg-transparent border text-white w-64"
-          style={{ borderColor: '#444' }}
+          style={{ borderColor: '#423c33' }}
         />
         {search && (
           <button
@@ -88,14 +88,14 @@ export default function Translations() {
             {cat.label !== '符文字' && cat.label !== '成套裝備' && cat.label !== '獨特裝備' && (
               <div
                 className="text-xs font-bold px-2 py-1 mb-1"
-                style={{ color: '#888', borderLeft: '2px solid #444', paddingLeft: '8px' }}
+                style={{ color: '#888', borderLeft: '2px solid #423c33', paddingLeft: '8px' }}
               >
                 {cat.label}
               </div>
             )}
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr style={{ borderBottom: '1px solid #333' }}>
+                <tr style={{ borderBottom: '1px solid #302c26' }}>
                   <th className="text-left px-3 py-1.5 text-gray-500 font-normal w-1/3">英文</th>
                   <th className="text-left px-3 py-1.5 text-gray-500 font-normal w-1/3">舊譯</th>
                   <th className="text-left px-3 py-1.5 font-normal w-1/3" style={{ color: '#aaddff' }}>新譯</th>
@@ -110,7 +110,7 @@ export default function Translations() {
                   >
                     <td className="px-3 py-1.5 text-gray-400 font-mono text-xs">{en}</td>
                     <td className="px-3 py-1.5 text-gray-300">{old || '—'}</td>
-                    <td className="px-3 py-1.5" style={{ color: nw ? '#aaddff' : '#444' }}>
+                    <td className="px-3 py-1.5" style={{ color: nw ? '#aaddff' : '#423c33' }}>
                       {nw || '（同舊譯）'}
                     </td>
                   </tr>

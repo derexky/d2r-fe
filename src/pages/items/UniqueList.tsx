@@ -38,7 +38,7 @@ export default function UniqueList() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-3" style={{ color: '#808000' }}>
+      <h1 className="text-xl font-bold mb-3" style={{ color: 'var(--gold)' }}>
         獨特裝備 — {category}
       </h1>
 
@@ -49,7 +49,7 @@ export default function UniqueList() {
               onClick={() => setTier(t)}
               className="px-3 py-1 text-sm border transition-colors"
               style={{
-                borderColor: tier === t ? '#808000' : '#404040',
+                borderColor: tier === t ? '#808000' : '#3a352d',
                 color: tier === t ? '#808000' : '#888',
                 backgroundColor: tier === t ? '#1a1400' : 'transparent',
               }}

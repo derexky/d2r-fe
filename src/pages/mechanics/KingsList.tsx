@@ -80,7 +80,7 @@ const ACT_COLORS: Record<string, string> = {
 export default function KingsList() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-2" style={{ color: '#ffcc99' }}>
+      <h1 className="text-xl font-bold mb-2" style={{ color: 'var(--gold)' }}>
         各地區小王一覽表
       </h1>
       <p className="text-sm text-gray-400 mb-4">
@@ -90,7 +90,7 @@ export default function KingsList() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {Object.entries(KINGS).map(([act, monsters]) => (
-          <div key={act} className="border p-3" style={{ borderColor: '#2a2a2a' }}>
+          <div key={act} className="border p-3" style={{ borderColor: '#2a2620' }}>
             <h2 className="text-sm font-bold mb-2" style={{ color: ACT_COLORS[act] }}>
               {act}
             </h2>

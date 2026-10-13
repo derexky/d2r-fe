@@ -43,7 +43,7 @@ export default function DiabloClone() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: '#ffcc99' }}>
+      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
         地表暗黑 / 特殊魔王
       </h1>
 
@@ -54,7 +54,7 @@ export default function DiabloClone() {
             onClick={() => setTab(t.key)}
             className="px-4 py-1 text-sm border transition-colors"
             style={{
-              borderColor: tab === t.key ? '#ffcc99' : '#333',
+              borderColor: tab === t.key ? '#ffcc99' : '#302c26',
               color: tab === t.key ? '#ffcc99' : '#888',
               backgroundColor: tab === t.key ? '#1a1000' : 'transparent',
             }}
@@ -83,7 +83,7 @@ export default function DiabloClone() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr style={{ borderBottom: '1px solid #333' }}>
+                <tr style={{ borderBottom: '1px solid #302c26' }}>
                   <th className="text-left py-2 px-3 text-gray-400 font-normal">名稱</th>
                   <th className="text-center py-2 px-3 text-gray-400 font-normal">等級</th>
                   <th className="text-right py-2 px-3 text-gray-400 font-normal">經驗值</th>
@@ -98,7 +98,7 @@ export default function DiabloClone() {
                 {BOSSES.map((b, i) => (
                   <tr
                     key={b.name}
-                    style={{ backgroundColor: i % 2 === 1 ? '#0d0d0d' : 'transparent', borderBottom: '1px solid #1a1a1a' }}
+                    style={{ backgroundColor: i % 2 === 1 ? '#11100e' : 'transparent', borderBottom: '1px solid #191714' }}
                   >
                     <td className="py-2 px-3" style={{ color: '#ff0000' }}>{b.name}</td>
                     <td className="py-2 px-3 text-center text-gray-300">{b.lvl}</td>

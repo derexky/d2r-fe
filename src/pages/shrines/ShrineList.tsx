@@ -31,14 +31,14 @@ const SHRINES: Shrine[] = [
 export default function ShrineList() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: '#cc66ff' }}>
+      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
         神殿介紹
       </h1>
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-collapse">
           <thead>
-            <tr style={{ borderBottom: '1px solid #333' }}>
+            <tr style={{ borderBottom: '1px solid #302c26' }}>
               <th className="text-left py-2 px-2 text-gray-400 font-normal">圖</th>
               <th className="text-left py-2 px-2 text-gray-400 font-normal">名稱</th>
               <th className="text-left py-2 px-2 text-gray-400 font-normal">效果</th>
@@ -50,7 +50,7 @@ export default function ShrineList() {
             {SHRINES.map((s, i) => (
               <tr
                 key={s.name}
-                style={{ backgroundColor: i % 2 === 1 ? '#0d0d0d' : 'transparent', borderBottom: '1px solid #1a1a1a' }}
+                style={{ backgroundColor: i % 2 === 1 ? '#11100e' : 'transparent', borderBottom: '1px solid #191714' }}
               >
                 <td className="py-1 px-2">
                   {s.img ? (

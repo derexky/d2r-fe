@@ -64,14 +64,14 @@ export default function RunewordList() {
   }, [words, socketFilter, versionFilter, runeFilter]);
 
   const filterBtn = (active: boolean) => ({
-    borderColor: active ? '#888' : '#404040',
+    borderColor: active ? '#888' : '#3a352d',
     color: active ? '#e0e0e0' : '#666',
-    backgroundColor: active ? '#1a1a1a' : 'transparent',
+    backgroundColor: active ? '#191714' : 'transparent',
   });
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: '#c0c0c0' }}>
+      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
         符文字
       </h1>
 
@@ -158,7 +158,7 @@ export default function RunewordList() {
             const runes: string[] = JSON.parse(rw.runes || '[]');
             const effects: string[] = JSON.parse(rw.effects || '[]');
             return (
-              <div key={rw.id} className="border p-3" style={{ borderColor: '#404040' }}>
+              <div key={rw.id} className="border p-3" style={{ borderColor: '#3a352d' }}>
                 <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                   <span className="font-bold" style={{ color: '#c0c0c0' }}>
                     {rw.name_zh}
@@ -168,7 +168,7 @@ export default function RunewordList() {
                   )}
                   <span
                     className="text-xs px-1.5 py-0.5 border"
-                    style={{ borderColor: '#404040', color: '#888' }}
+                    style={{ borderColor: '#3a352d', color: '#888' }}
                   >
                     {rw.socket_count}孔
                   </span>

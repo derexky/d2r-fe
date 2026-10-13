@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/* 風格參考 d2r-build-journal：暖黑底、米白字、暗紅／金強調、襯線標題 */
+@theme {
+  --color-gray-200: #e6dfd2;
+  --color-gray-300: #ddd5c7;
+  --color-gray-400: #b0a898;
+  --color-gray-500: #8f8a80;
+  --color-gray-600: #6b665d;
+  --color-yellow-300: #d8b672;
+  --color-yellow-400: #e2c487;
+  --color-yellow-600: #9a7d42;
+  --color-red-400: #d0564a;
+}
+
 :root {
   --color-unique: #808000;
   --color-set: #00c400;
@@ -8,14 +21,36 @@
   --color-magic: #6784ed;
   --color-stat: #00ffff;
   --color-variable: #ff00ff;
+
+  --ink: #ddd5c7;
+  --muted: #8f8a80;
+  --red: #b53226;
+  --gold: #c6a25a;
+  --line: #302c26;
+  --panel: #11100e;
 }
 
 body {
   margin: 0;
-  background-color: #000;
-  color: #fff;
-  font-family: '微軟正黑體', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif;
+  background-color: #0b0b0a;
+  background-image: radial-gradient(circle at 80% 0%, #7f191318, transparent 40%);
+  color: var(--ink);
+  font-family: 'Noto Sans TC', '微軟正黑體', 'Microsoft JhengHei', system-ui, sans-serif;
 }
+
+h1, h2 {
+  font-family: Georgia, 'Noto Serif TC', serif;
+  letter-spacing: 0.04em;
+}
+
+.brand {
+  color: var(--ink);
+  font-family: Georgia, 'Noto Serif TC', serif;
+  letter-spacing: 0.12em;
+}
+.brand span { color: var(--red); margin-right: 6px; }
+
+::selection { background: #b5322655; }
 
 #root {
   height: 100vh;

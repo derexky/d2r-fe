@@ -37,18 +37,18 @@ const RUNES = [
 export default function RuneList() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: '#c0a030' }}>
+      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
         符文介紹
       </h1>
       <p className="text-sm text-gray-400 mb-4">
         符文可鑲嵌於凹槽裝備中，依特殊排列方式可組合成
-        <a href="/runewords" className="ml-1" style={{ color: '#c0a030' }}>符文字</a>。
+        <a href="/runewords" className="ml-1" style={{ color: '#c6a25a' }}>符文字</a>。
       </p>
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-collapse">
           <thead>
-            <tr style={{ borderBottom: '1px solid #333' }}>
+            <tr style={{ borderBottom: '1px solid #302c26' }}>
               <th className="text-left py-2 px-2 text-gray-400 font-normal">圖</th>
               <th className="text-center py-2 px-2 text-gray-400 font-normal">#</th>
               <th className="text-left py-2 px-2 text-gray-400 font-normal">名稱</th>
@@ -61,7 +61,7 @@ export default function RuneList() {
             {RUNES.map((r, i) => (
               <tr
                 key={r.id}
-                style={{ backgroundColor: i % 2 === 1 ? '#0d0d0d' : 'transparent', borderBottom: '1px solid #1a1a1a' }}
+                style={{ backgroundColor: i % 2 === 1 ? '#11100e' : 'transparent', borderBottom: '1px solid #191714' }}
               >
                 <td className="py-1 px-2">
                   <img
@@ -72,7 +72,7 @@ export default function RuneList() {
                 </td>
                 <td className="py-1 px-2 text-center text-gray-500">{r.id}</td>
                 <td className="py-1 px-2 whitespace-nowrap">
-                  <span style={{ color: '#c0a030' }}>{r.name_zh}</span>
+                  <span style={{ color: '#c6a25a' }}>{r.name_zh}</span>
                   <span className="text-gray-500 text-xs ml-1">({r.name_en})</span>
                 </td>
                 <td className="py-1 px-2 text-gray-300">{r.weapon}</td>

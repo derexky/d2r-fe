@@ -29,7 +29,7 @@ const CATEGORIES = [
 export default function UniqueIndex() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: '#808000' }}>
+      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
         獨特裝備
       </h1>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-md">
@@ -38,7 +38,7 @@ export default function UniqueIndex() {
             key={c.value}
             to={`/items/unique/${c.value}`}
             className="block px-3 py-2 text-sm text-center border hover:border-yellow-600 transition-colors"
-            style={{ borderColor: '#404040', color: '#808000' }}
+            style={{ borderColor: '#3a352d', color: '#808000' }}
           >
             {c.label}
           </Link>

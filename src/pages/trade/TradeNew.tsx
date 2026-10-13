@@ -28,8 +28,8 @@ interface FormState {
 }
 
 const inputStyle: React.CSSProperties = {
-  background: '#1a1a1a',
-  border: '1px solid #333',
+  background: '#191714',
+  border: '1px solid #302c26',
   color: '#aaa',
   padding: '4px 8px',
   width: '100%',
@@ -228,7 +228,7 @@ export default function TradeNew() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: '#808000' }}>
+      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
         建立交易掛單
       </h1>
       <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
@@ -239,8 +239,8 @@ export default function TradeNew() {
             onDragOver={(e) => e.preventDefault()}
             onClick={() => document.getElementById('ocr-file-input')?.click()}
             style={{
-              border: '2px dashed #444',
-              background: '#111',
+              border: '2px dashed #423c33',
+              background: '#141210',
               padding: '32px 16px',
               textAlign: 'center',
               cursor: 'pointer',
@@ -284,13 +284,13 @@ export default function TradeNew() {
           {ocrRaw && (
             <div
               style={{
-                background: '#0a0a0a',
-                border: '1px solid #222',
+                background: '#11100e',
+                border: '1px solid #24211c',
                 padding: '10px',
                 borderRadius: '2px',
               }}
             >
-              <div style={{ color: '#444', fontSize: '10px', marginBottom: '4px' }}>
+              <div style={{ color: '#423c33', fontSize: '10px', marginBottom: '4px' }}>
                 OCR 原始輸出
               </div>
               <pre style={{ color: '#555', fontSize: '10px', whiteSpace: 'pre-wrap', margin: 0 }}>

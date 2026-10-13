@@ -35,7 +35,7 @@ export default function MagicFind() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: '#cc66ff' }}>
+      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
         Magic Find 說明
       </h1>
       <p className="text-sm text-gray-400 mb-4">
@@ -43,7 +43,7 @@ export default function MagicFind() {
         魔法物品為線性，稀有/套裝/獨特物品有遞減效果。
       </p>
 
-      <div className="mb-6 p-4 border max-w-md" style={{ borderColor: '#333' }}>
+      <div className="mb-6 p-4 border max-w-md" style={{ borderColor: '#302c26' }}>
         <h2 className="text-sm font-bold mb-3 text-gray-300">計算有效 MF</h2>
         <div className="flex items-center gap-2 mb-3">
           <span className="text-gray-400 text-sm">MF：</span>
@@ -52,7 +52,7 @@ export default function MagicFind() {
             value={mf}
             onChange={(e) => setMf(e.target.value)}
             className="w-24 px-2 py-1 text-sm bg-transparent border text-white"
-            style={{ borderColor: '#444' }}
+            style={{ borderColor: '#423c33' }}
             placeholder="輸入MF"
             min={0}
           />
@@ -84,7 +84,7 @@ export default function MagicFind() {
       <div className="overflow-x-auto">
         <table className="text-sm border-collapse">
           <thead>
-            <tr style={{ borderBottom: '1px solid #333' }}>
+            <tr style={{ borderBottom: '1px solid #302c26' }}>
               <th className="py-2 px-3 text-left font-normal" style={{ color: '#00ffff' }}>MF 值</th>
               <th className="py-2 px-3 text-center font-normal" style={{ color: '#6784ed' }}>魔法</th>
               <th className="py-2 px-3 text-center font-normal" style={{ color: '#ffff00' }}>稀有</th>
@@ -96,7 +96,7 @@ export default function MagicFind() {
             {MF_TABLE.map(([mfv, magic, rare, set, unique], i) => (
               <tr
                 key={mfv}
-                style={{ backgroundColor: i % 2 === 1 ? '#0d0d0d' : 'transparent', borderBottom: '1px solid #1a1a1a' }}
+                style={{ backgroundColor: i % 2 === 1 ? '#11100e' : 'transparent', borderBottom: '1px solid #191714' }}
               >
                 <td className="py-1 px-3" style={{ color: '#00ffff' }}>{mfv}</td>
                 <td className="py-1 px-3 text-center" style={{ color: '#6784ed' }}>{magic}</td>

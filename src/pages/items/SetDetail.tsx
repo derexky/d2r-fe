@@ -44,7 +44,7 @@ export default function SetDetail() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-xl font-bold mb-4" style={{ color: '#00c400' }}>
+      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
         {set.name_zh}
         {set.name_en && <span className="ml-3 text-sm text-gray-400">{set.name_en}</span>}
       </h1>

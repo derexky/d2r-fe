@@ -18,20 +18,20 @@ export default function Home() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-xl font-bold mb-4" style={{ color: '#808000' }}>
+      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
         公告欄
       </h1>
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-collapse">
           <thead>
-            <tr style={{ borderBottom: '1px solid #404040' }}>
+            <tr style={{ borderBottom: '1px solid #3a352d' }}>
               <th className="text-left py-1 pr-4 w-28" style={{ color: '#c0c0c0' }}>日期</th>
               <th className="text-left py-1" style={{ color: '#c0c0c0' }}>內容</th>
             </tr>
           </thead>
           <tbody>
             {items.map((a) => (
-              <tr key={a.id} style={{ borderBottom: '1px solid #222' }}>
+              <tr key={a.id} style={{ borderBottom: '1px solid #24211c' }}>
                 <td className="py-1 pr-4 text-gray-400 whitespace-nowrap">{a.date}</td>
                 <td className="py-1">{a.content}</td>
               </tr>

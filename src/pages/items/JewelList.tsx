@@ -179,7 +179,7 @@ const D2R_JEWELS = [
 export default function JewelList() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: '#808000' }}>
+      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
         獨特珠寶
       </h1>
       <p className="text-sm text-gray-400 mb-4">
@@ -189,7 +189,7 @@ export default function JewelList() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {FACETS.map((f, i) => (
-          <div key={i} className="border p-3" style={{ borderColor: '#2a2a2a' }}>
+          <div key={i} className="border p-3" style={{ borderColor: '#2a2620' }}>
             <div className="flex items-center gap-2 mb-2">
               <div className="flex gap-1">
                 {f.imgs.map((img) => (
@@ -228,7 +228,7 @@ export default function JewelList() {
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {D2R_JEWELS.map((j) => (
-          <div key={j.name_en} className="border p-3" style={{ borderColor: '#2a2a2a' }}>
+          <div key={j.name_en} className="border p-3" style={{ borderColor: '#2a2620' }}>
             <div className="flex items-center gap-2 mb-2">
               <div>
                 <span className="text-sm font-bold" style={{ color: '#ffff00' }}>{j.name_zh}</span>

@@ -41,7 +41,7 @@ export default function ClassItems() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-3" style={{ color: '#808000' }}>
+      <h1 className="text-xl font-bold mb-3" style={{ color: 'var(--gold)' }}>
         職業專屬裝備
       </h1>
 
@@ -52,7 +52,7 @@ export default function ClassItems() {
             onClick={() => navigate(`/items/class/${c.value}`)}
             className="px-3 py-1 text-sm border transition-colors"
             style={{
-              borderColor: activeClass === c.value ? '#808000' : '#404040',
+              borderColor: activeClass === c.value ? '#808000' : '#3a352d',
               color: activeClass === c.value ? '#808000' : '#888',
               backgroundColor: activeClass === c.value ? '#1a1400' : 'transparent',
             }}

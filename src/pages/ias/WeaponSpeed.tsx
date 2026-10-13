@@ -327,7 +327,7 @@ export default function WeaponSpeed() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: '#00ffff' }}>
+      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
         武器速度參考表
       </h1>
       <p className="text-sm text-gray-400 mb-3">
@@ -349,7 +349,7 @@ export default function WeaponSpeed() {
           onChange={(e) => setSearch(e.target.value)}
           placeholder="搜尋武器名稱..."
           className="px-3 py-1 text-sm border bg-transparent"
-          style={{ borderColor: '#404040', color: '#ffffff', width: '200px' }}
+          style={{ borderColor: '#3a352d', color: '#ffffff', width: '200px' }}
         />
         <span className="text-gray-500 text-xs ml-2">{filtered.length} 項</span>
       </div>
@@ -357,7 +357,7 @@ export default function WeaponSpeed() {
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-collapse">
           <thead>
-            <tr style={{ borderBottom: '1px solid #333' }}>
+            <tr style={{ borderBottom: '1px solid #302c26' }}>
               <th className="text-left py-1 px-2 font-normal text-gray-400 w-8">WSM</th>
               <th className="text-left py-1 px-2 font-normal text-gray-400">速度</th>
               <th className="text-left py-1 px-2 font-normal text-gray-400">中文</th>
@@ -369,8 +369,8 @@ export default function WeaponSpeed() {
               <tr
                 key={w.en}
                 style={{
-                  backgroundColor: i % 2 === 1 ? '#0d0d0d' : 'transparent',
-                  borderBottom: '1px solid #1a1a1a',
+                  backgroundColor: i % 2 === 1 ? '#11100e' : 'transparent',
+                  borderBottom: '1px solid #191714',
                 }}
               >
                 <td className="py-1 px-2 font-mono" style={{ color: wsmColor(w.wsm) }}>

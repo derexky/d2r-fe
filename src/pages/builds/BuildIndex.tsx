@@ -7,6 +7,7 @@ interface Build {
   id: number;
   class: string;
   name: string;
+  rating: number | null;
 }
 
 const CLASSES = [
@@ -17,6 +18,7 @@ const CLASSES = [
   { value: 'paladin', label: '聖騎士' },
   { value: 'druid', label: '德魯伊' },
   { value: 'assassin', label: '刺客' },
+  { value: 'warlock', label: '術士' },
 ];
 
 const CLASS_COLORS: Record<string, string> = {
@@ -27,6 +29,7 @@ const CLASS_COLORS: Record<string, string> = {
   paladin: '#ffff00',
   druid: '#808000',
   assassin: '#ff4040',
+  warlock: '#cc66ff',
 };
 
 export default function BuildIndex() {
@@ -54,7 +57,7 @@ export default function BuildIndex() {
             onClick={() => navigate(`/builds/${c.value}`)}
             className="px-3 py-1 text-sm border transition-colors"
             style={{
-              borderColor: activeClass === c.value ? CLASS_COLORS[c.value] : '#404040',
+              borderColor: activeClass === c.value ? CLASS_COLORS[c.value] : '#3a352d',
               color: activeClass === c.value ? CLASS_COLORS[c.value] : '#888',
             }}
           >
@@ -66,18 +69,27 @@ export default function BuildIndex() {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <div className="space-y-1 max-w-md">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {builds.map((b) => (
             <Link
               key={b.id}
               to={`/builds/${b.class}/${b.id}`}
-              className="block px-3 py-2 border text-sm hover:border-opacity-80 transition-colors"
-              style={{ borderColor: '#303030', color }}
+              className="block px-4 py-3 border transition-colors hover:border-yellow-600 hover:bg-[#1a1512]"
+              style={{ borderColor: 'var(--line)', backgroundColor: 'var(--panel)' }}
             >
-              {b.name}
+              <span className="block text-xs tracking-widest text-gray-500">
+                {CLASSES.find((c) => c.value === b.class)?.label}
+              </span>
+              <span className="block mt-1 font-bold" style={{ color }}>{b.name}</span>
+              {b.rating != null && (
+                <span className="block mt-1 text-sm" style={{ color: 'var(--gold)' }}>
+                  {'★'.repeat(b.rating)}
+                  <span className="text-gray-600">{'★'.repeat(Math.max(0, 5 - b.rating))}</span>
+                </span>
+              )}
             </Link>
           ))}
-          {builds.length === 0 && <p className="text-gray-500 text-sm">暫無攻略</p>}
+          {builds.length === 0 && <p className="text-gray-500 text-sm col-span-full">暫無攻略</p>}
         </div>
       )}
     </div>
