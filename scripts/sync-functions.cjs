@@ -18,6 +18,11 @@ for (const file of ['package.json', 'd2r.sqlite']) {
   fs.copyFileSync(path.join(SERVICE_DIR, file), path.join(FUNCTIONS_DIR, file));
 }
 
+// Firebase loads functions/.env as runtime env vars (TRADERIE_URL, TRADERIE_TOKEN)
+if (fs.existsSync(path.join(SERVICE_DIR, '.env'))) {
+  fs.copyFileSync(path.join(SERVICE_DIR, '.env'), path.join(FUNCTIONS_DIR, '.env'));
+}
+
 console.log('Installing dependencies...');
 execSync('npm install', { cwd: FUNCTIONS_DIR, stdio: 'inherit' });
 
