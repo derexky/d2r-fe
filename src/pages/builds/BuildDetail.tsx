@@ -76,7 +76,7 @@ export default function BuildDetail() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-xl font-bold mb-2" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-2">
         {build.name}
       </h1>
       {build.description && (

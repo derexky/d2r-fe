@@ -60,7 +60,7 @@ export default function TradeList() {
           marginBottom: '12px',
         }}
       >
-        <h1 className="text-xl font-bold" style={{ color: 'var(--gold)' }}>
+        <h1 className="text-xl font-bold">
           交易市集
         </h1>
         <Link

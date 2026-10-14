@@ -35,7 +35,7 @@ export default function MagicFind() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-1">
         Magic Find 說明
       </h1>
       <p className="text-sm text-gray-400 mb-4">

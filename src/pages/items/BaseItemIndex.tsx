@@ -53,7 +53,7 @@ function CategoryGrid({ title, items }: { title: string; items: { label: string;
 export default function BaseItemIndex() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-4">
         基礎裝備
       </h1>
       <CategoryGrid title="防具" items={ARMOR_CATEGORIES} />

@@ -107,7 +107,7 @@ const SECTIONS: Section[] = [
 export default function Formulas() {
   return (
     <div className="text-sm max-w-2xl">
-      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-4">
         遊戲公式
       </h1>
 

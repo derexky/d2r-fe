@@ -17,7 +17,7 @@ export default function RareNames() {
 
   return (
     <div className="text-sm">
-      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-1">
         稀有裝備名稱
       </h1>
       <p className="text-xs text-gray-500 mb-3">

@@ -209,7 +209,7 @@ export default function CraftedItems() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-1">
         手工製作裝備
       </h1>
       <p className="text-sm text-gray-400 mb-4">

@@ -19,7 +19,7 @@ export default function SetIndex() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-4">
         成套裝備
       </h1>
       <div className="space-y-1 max-w-lg">

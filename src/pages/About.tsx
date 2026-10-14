@@ -8,7 +8,7 @@ const SITE_INFO = [
 
 const CONTENT_SECTIONS = [
   { icon: '⚔', title: '裝備資料庫', desc: '獨特裝備、套裝裝備、職業專屬、獨特珠寶、手工製作' },
-  { icon: '🔴', title: '符文研究', desc: '符文介紹、符文字配方、寶石效果' },
+  { icon: '🔴', title: '符文研究', desc: '符文介紹、符文組配方、寶石效果' },
   { icon: '🧙', title: '職業攻略', desc: '七大職業、數十種配點練法詳解' },
   { icon: '⚡', title: 'IAS 攻速計算', desc: '第 1、2、5 幕傭兵攻速斷點查詢' },
   { icon: '🗺', title: '遊戲機制', desc: '神殿效果、Magic Find、地表暗黑、各幕小王' },
@@ -18,7 +18,7 @@ const CONTENT_SECTIONS = [
 export default function About() {
   return (
     <div className="max-w-2xl text-sm">
-      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-4">
         關於易牙居
       </h1>
 

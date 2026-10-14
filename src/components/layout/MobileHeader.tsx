@@ -5,8 +5,8 @@ interface Props {
 export default function MobileHeader({ onMenuClick }: Props) {
   return (
     <header
-      className="flex md:hidden items-center justify-between shrink-0 px-4 py-3 border-b"
-      style={{ backgroundColor: '#11100e', borderColor: '#3a352d' }}
+      className="flex md:hidden items-center justify-between shrink-0 px-4 h-14 border-b backdrop-blur-md"
+      style={{ backgroundColor: '#0a0a09ed', borderColor: '#2a2722' }}
     >
       <button
         onClick={onMenuClick}

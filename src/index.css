@@ -64,3 +64,88 @@ h1, h2 {
 .text-magic { color: var(--color-magic); }
 .text-stat { color: var(--color-stat); }
 .text-variable { color: var(--color-variable); }
+
+/* ── 版面：參考 build-journal 的 hero / card / eyebrow ── */
+main h1 {
+  color: #e8e0d4;
+  font-weight: 500;
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1.2;
+  margin-bottom: 18px;
+}
+main h1::before {
+  content: "";
+  display: block;
+  width: 56px;
+  height: 2px;
+  background: var(--red);
+  margin-bottom: 16px;
+}
+
+.eyebrow {
+  color: var(--gold);
+  letter-spacing: 0.25em;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 80% 45%, #7f191332, transparent 30%),
+    linear-gradient(118deg, #11100e, #0c0c0b 60%, #15100e);
+  padding: clamp(36px, 6vw, 72px) clamp(20px, 5vw, 64px);
+  margin-bottom: 40px;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.14;
+  background-image: linear-gradient(90deg, transparent 49.8%, #75644a 50%, transparent 50.2%);
+  background-size: 80px 100%;
+  mask-image: linear-gradient(transparent, #000, transparent);
+  pointer-events: none;
+}
+main .hero h1 {
+  font-size: clamp(40px, 6vw, 72px);
+  letter-spacing: -0.02em;
+  margin: 16px 0 20px;
+}
+main .hero h1::before { display: none; }
+.hero h1 em { color: #bd3b2f; font-style: normal; }
+.hero .lead { color: #aaa398; max-width: 620px; font-size: 16px; line-height: 1.9; }
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 112px;
+  padding: 20px;
+  background: linear-gradient(135deg, #171613, #11110f);
+  border: 1px solid #2c2924;
+  transition: all 0.2s;
+}
+.card:hover {
+  background: linear-gradient(135deg, #201915, #12110f);
+  border-color: #744037;
+  transform: translateY(-2px);
+}
+.card small { color: #777168; letter-spacing: 0.08em; font-size: 10px; }
+.card strong { color: #e3dbcf; font: 19px Georgia, 'Noto Serif TC', serif; }
+.mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  color: #c49e5c;
+  border: 1px solid #59422c;
+  font: 16px Georgia, serif;
+  transform: rotate(45deg);
+}
+.mark > * { transform: rotate(-45deg); }
+.stars { color: #c7a055; letter-spacing: 2px; font-size: 12px; }
+.stars i { color: #3e3932; font-style: normal; }

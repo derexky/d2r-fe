@@ -43,7 +43,7 @@ export default function DiabloClone() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-4">
         地表暗黑 / 特殊魔王
       </h1>
 

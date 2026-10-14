@@ -27,7 +27,7 @@ const DATA: Row[] = [
 export default function MaxSockets() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-1">
         最大孔數
       </h1>
       <p className="text-sm text-gray-400 mb-4">

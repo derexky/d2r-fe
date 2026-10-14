@@ -9,7 +9,7 @@ const MERCS = [
 export default function IasIndex() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-4">
         IAS 攻速計算器
       </h1>
       <p className="text-sm text-gray-400 mb-4">選擇傭兵類型以計算攻速斷點</p>

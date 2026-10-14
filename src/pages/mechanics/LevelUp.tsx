@@ -24,7 +24,7 @@ const DIFF_COLOR: Record<string, string> = {
 export default function LevelUp() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-1">
         最佳練級難度
       </h1>
       <p className="text-sm text-gray-400 mb-4">

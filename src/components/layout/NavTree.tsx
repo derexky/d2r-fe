@@ -27,7 +27,7 @@ const NAV: NavItem[] = [
     label: '符文研究',
     children: [
       { label: '符文介紹', to: '/runes' },
-      { label: '符文字', to: '/runewords' },
+      { label: '符文組', to: '/runewords' },
       { label: '寶石介紹', to: '/gems' },
     ],
   },
@@ -88,10 +88,11 @@ function NavNode({ item, depth = 0 }: { item: NavItem; depth?: number }) {
       <div>
         <button
           onClick={() => setOpen((o) => !o)}
-          className="w-full text-left px-2 py-1 text-sm font-bold hover:text-yellow-400 transition-colors"
-          style={{ paddingLeft: `${8 + indent}px`, color: '#c6a25a' }}
+          className="eyebrow w-full flex justify-between items-center pr-4 pt-4 pb-2 hover:text-yellow-400 transition-colors"
+          style={{ paddingLeft: `${16 + indent}px` }}
         >
-          {open ? '▾' : '▸'} {item.label}
+          {item.label}
+          <span className="text-gray-600">{open ? '−' : '+'}</span>
         </button>
         {open && (
           <div>
@@ -108,9 +109,9 @@ function NavNode({ item, depth = 0 }: { item: NavItem; depth?: number }) {
     <NavLink
       to={item.to!}
       className={({ isActive }) =>
-        `block text-sm py-1 hover:text-yellow-300 transition-colors border-l-2 ${isActive ? 'text-yellow-300 font-bold border-[var(--red)] bg-[#1a1512]' : 'text-gray-300 border-transparent'}`
+        `block text-[13px] py-1.5 hover:text-white transition-colors border-l-2 ${isActive ? 'text-[#f0e8dc] border-[var(--red)] bg-[#281411]' : 'text-[#aaa398] border-transparent'}`
       }
-      style={{ paddingLeft: `${20 + indent}px` }}
+      style={{ paddingLeft: `${16 + indent / 2}px` }}
     >
       {item.label}
     </NavLink>

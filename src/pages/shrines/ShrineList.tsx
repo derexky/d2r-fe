@@ -31,7 +31,7 @@ const SHRINES: Shrine[] = [
 export default function ShrineList() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-4">
         神殿介紹
       </h1>
 

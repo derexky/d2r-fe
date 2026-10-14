@@ -179,7 +179,7 @@ const D2R_JEWELS = [
 export default function JewelList() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-1">
         獨特珠寶
       </h1>
       <p className="text-sm text-gray-400 mb-4">

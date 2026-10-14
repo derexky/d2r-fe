@@ -339,7 +339,7 @@ export default function Alvl85() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-1">
         85 場景怪物免疫表
       </h1>
       <p className="text-sm text-gray-400 mb-4">

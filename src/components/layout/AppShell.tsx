@@ -17,8 +17,10 @@ export default function AppShell() {
         <Sidebar />
       </div>
       <MobileHeader onMenuClick={openDrawer} />
-      <main className="flex-1 overflow-auto p-4">
-        <Outlet />
+      <main className="flex-1 overflow-auto">
+        <div className="max-w-[1240px] mx-auto px-4 py-6 md:px-10 md:py-10">
+          <Outlet />
+        </div>
       </main>
       <BottomNav />
       <MobileDrawer open={drawerOpen} onClose={closeDrawer} />

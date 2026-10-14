@@ -43,7 +43,7 @@ export default function IasCalculator() {
 
   return (
     <div className="max-w-lg">
-      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-4">
         IAS 計算 — {MERC_LABELS[merc!] || merc}
       </h1>
 

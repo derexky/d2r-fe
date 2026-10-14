@@ -61,7 +61,7 @@ export default function BaseItemList() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-3" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-3">
         基礎裝備 — {GID_LABELS[gid!] ?? gid}
       </h1>
 

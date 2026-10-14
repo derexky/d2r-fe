@@ -4,7 +4,7 @@ import { RUNEWORDS, BASE_ITEMS, SET_ITEMS, UNIQUE_ITEMS, type TCategory } from '
 type Tab = 'runewords' | 'base' | 'sets' | 'unique';
 
 const TABS: Array<{ id: Tab; label: string; data: TCategory[] }> = [
-  { id: 'runewords', label: '符文字', data: RUNEWORDS },
+  { id: 'runewords', label: '符文組', data: RUNEWORDS },
   { id: 'base',      label: '基礎裝備', data: BASE_ITEMS },
   { id: 'sets',      label: '成套裝備', data: SET_ITEMS },
   { id: 'unique',    label: '獨特裝備', data: UNIQUE_ITEMS },
@@ -35,7 +35,7 @@ export default function Translations() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-1">
         新舊繁中翻譯對照表
       </h1>
       <p className="text-sm text-gray-400 mb-4">
@@ -85,7 +85,7 @@ export default function Translations() {
       <div className="space-y-4">
         {filtered.map(cat => (
           <div key={cat.label}>
-            {cat.label !== '符文字' && cat.label !== '成套裝備' && cat.label !== '獨特裝備' && (
+            {cat.label !== '符文組' && cat.label !== '成套裝備' && cat.label !== '獨特裝備' && (
               <div
                 className="text-xs font-bold px-2 py-1 mb-1"
                 style={{ color: '#888', borderLeft: '2px solid #423c33', paddingLeft: '8px' }}

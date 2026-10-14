@@ -5,10 +5,10 @@ export interface TCategory {
   items: TRow[];
 }
 
-// ─── 符文字 ──────────────────────────────────────────────────
+// ─── 符文組 ──────────────────────────────────────────────────
 export const RUNEWORDS: TCategory[] = [
   {
-    label: '符文字',
+    label: '符文組',
     items: [
       ["Ancients' Pledge", '古代人的契約', '先祖之契'],
       ['Authority', '權威', '權威'],

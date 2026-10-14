@@ -74,19 +74,19 @@ export default function BuildIndex() {
             <Link
               key={b.id}
               to={`/builds/${b.class}/${b.id}`}
-              className="block px-4 py-3 border transition-colors hover:border-yellow-600 hover:bg-[#1a1512]"
-              style={{ borderColor: 'var(--line)', backgroundColor: 'var(--panel)' }}
+              className="card"
             >
-              <span className="block text-xs tracking-widest text-gray-500">
-                {CLASSES.find((c) => c.value === b.class)?.label}
+              <span className="mark"><span>{b.name.slice(0, 1)}</span></span>
+              <span className="flex flex-col gap-2 min-w-0">
+                <small>{CLASSES.find((c) => c.value === b.class)?.label}</small>
+                <strong style={{ color }}>{b.name}</strong>
+                {b.rating != null && (
+                  <span className="stars">
+                    {'★'.repeat(b.rating)}
+                    <i>{'★'.repeat(Math.max(0, 5 - b.rating))}</i>
+                  </span>
+                )}
               </span>
-              <span className="block mt-1 font-bold" style={{ color }}>{b.name}</span>
-              {b.rating != null && (
-                <span className="block mt-1 text-sm" style={{ color: 'var(--gold)' }}>
-                  {'★'.repeat(b.rating)}
-                  <span className="text-gray-600">{'★'.repeat(Math.max(0, 5 - b.rating))}</span>
-                </span>
-              )}
             </Link>
           ))}
           {builds.length === 0 && <p className="text-gray-500 text-sm col-span-full">暫無攻略</p>}

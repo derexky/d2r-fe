@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 const TABS = [
   { label: '首頁', to: '/', end: true },
   { label: '裝備', to: '/items/unique', end: false },
-  { label: '符文字', to: '/runewords', end: false },
+  { label: '符文組', to: '/runewords', end: false },
   { label: '攻略', to: '/builds', end: false },
 ] as const;
 

@@ -80,7 +80,7 @@ const ACT_COLORS: Record<string, string> = {
 export default function KingsList() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-2" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-2">
         各地區小王一覽表
       </h1>
       <p className="text-sm text-gray-400 mb-4">

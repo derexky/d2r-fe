@@ -141,7 +141,7 @@ export default function CubeRecipes() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-4">
         方塊合成公式
       </h1>
 

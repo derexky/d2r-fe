@@ -29,7 +29,7 @@ const CATEGORIES = [
 export default function UniqueIndex() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-4">
         獨特裝備
       </h1>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-md">

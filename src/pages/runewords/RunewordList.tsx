@@ -71,8 +71,8 @@ export default function RunewordList() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
-        符文字
+      <h1 className="text-xl font-bold mb-4">
+        符文組
       </h1>
 
       {/* Slot */}
@@ -201,7 +201,7 @@ export default function RunewordList() {
             );
           })}
           {filtered.length === 0 && (
-            <p className="text-sm" style={{ color: '#666' }}>暫無符合條件的符文字</p>
+            <p className="text-sm" style={{ color: '#666' }}>暫無符合條件的符文組</p>
           )}
         </div>
       )}

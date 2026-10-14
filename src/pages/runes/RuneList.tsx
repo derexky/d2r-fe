@@ -37,12 +37,12 @@ const RUNES = [
 export default function RuneList() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-1">
         符文介紹
       </h1>
       <p className="text-sm text-gray-400 mb-4">
         符文可鑲嵌於凹槽裝備中，依特殊排列方式可組合成
-        <a href="/runewords" className="ml-1" style={{ color: '#c6a25a' }}>符文字</a>。
+        <a href="/runewords" className="ml-1" style={{ color: '#c6a25a' }}>符文組</a>。
       </p>
 
       <div className="overflow-x-auto">

@@ -41,7 +41,7 @@ export default function UniqueList() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-3" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-3">
         獨特裝備 — {category}
       </h1>
 

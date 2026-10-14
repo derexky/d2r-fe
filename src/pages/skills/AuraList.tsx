@@ -59,7 +59,7 @@ function AuraSection({ title, auras }: { title: string; auras: Aura[] }) {
 export default function AuraList() {
   return (
     <div>
-      <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--gold)' }}>靈氣特效對照</h1>
+      <h1 className="text-xl font-bold mb-1">靈氣特效對照</h1>
       <p className="text-xs text-gray-500 mb-6">聖騎士靈氣特效與技能名稱對照表</p>
       <AuraSection title="攻擊靈氣" auras={OFFENSIVE} />
       <AuraSection title="防禦靈氣" auras={DEFENSIVE} />

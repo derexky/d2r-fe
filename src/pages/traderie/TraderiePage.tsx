@@ -52,7 +52,7 @@ export default function TraderiePage() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold" style={{ color: 'var(--gold)', marginBottom: '12px' }}>成交價格統計</h1>
+      <h1 className="text-xl font-bold" style={{ marginBottom: '12px' }}>成交價格統計</h1>
 
       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' as const }}>
         {/* 物品清單 */}

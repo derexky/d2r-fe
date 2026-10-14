@@ -41,7 +41,7 @@ export default function ClassItems() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-3" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-3">
         職業專屬裝備
       </h1>
 

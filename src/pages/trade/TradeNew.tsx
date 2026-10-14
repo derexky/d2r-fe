@@ -228,7 +228,7 @@ export default function TradeNew() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4" style={{ color: 'var(--gold)' }}>
+      <h1 className="text-xl font-bold mb-4">
         建立交易掛單
       </h1>
       <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
