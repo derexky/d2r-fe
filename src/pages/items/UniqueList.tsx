@@ -21,18 +21,21 @@ interface Item {
 const TIERS = ['normal', 'exceptional', 'elite'];
 const TIER_LABELS: Record<string, string> = {
   normal: '普通',
-  exceptional: '精英',
-  elite: '頂級',
+  exceptional: '進階',
+  elite: '菁英',
 };
+// 飾品不分等級
+const NO_TIER = ['rings', 'amulets', 'charms'];
 
 export default function UniqueList() {
   const { category } = useParams<{ category: string }>();
   const [tier, setTier] = useState('normal');
 
-  const queryParams: Record<string, string> = { category: category!, tier };
+  const hasTier = !NO_TIER.includes(category!);
+  const queryParams: Record<string, string> = hasTier ? { category: category!, tier } : { category: category! };
 
   const { data: items = [], isLoading: loading } = useQuery<Item[]>({
-    queryKey: ['items', category, tier],
+    queryKey: ['items', category, hasTier && tier],
     queryFn: () => api.getItems(queryParams),
   });
 
@@ -42,7 +45,7 @@ export default function UniqueList() {
         獨特裝備 — {category}
       </h1>
 
-      <div className="flex gap-2 mb-4">
+      {hasTier && <div className="flex gap-2 mb-4">
           {TIERS.map((t) => (
             <button
               key={t}
@@ -57,7 +60,7 @@ export default function UniqueList() {
               {TIER_LABELS[t]}
             </button>
           ))}
-        </div>
+        </div>}
 
       {loading ? (
         <LoadingSpinner />

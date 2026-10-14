@@ -21,8 +21,8 @@ interface BaseItem {
 const GRADES = ['normal', 'exceptional', 'elite'] as const;
 const GRADE_LABELS: Record<string, string> = {
   normal: '普通',
-  exceptional: '精英',
-  elite: '頂級',
+  exceptional: '進階',
+  elite: '菁英',
 };
 
 const GID_LABELS: Record<string, string> = {
