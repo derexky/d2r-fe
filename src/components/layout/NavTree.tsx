@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
+import { ITEM_TABS } from '../../pages/items/itemTabs';
 
 interface NavItem {
   label: string;
   to?: string;
+  match?: string[]; // extra path prefixes that also mark this entry active
   children?: NavItem[];
 }
 
@@ -11,10 +13,7 @@ const NAV: NavItem[] = [
   {
     label: '裝備研究',
     children: [
-      { label: '基礎裝備', to: '/items/base' },
-      { label: '獨特裝備', to: '/items/unique' },
-      { label: '成套裝備', to: '/items/sets' },
-      { label: '職業專屬', to: '/items/class' },
+      { label: '裝備圖鑑', to: '/items/base', match: ITEM_TABS.map((t) => t.to) },
       { label: '獨特珠寶', to: '/items/jewels' },
       { label: '手工製作', to: '/items/crafted' },
       { label: '方塊合成', to: '/cube' },
@@ -80,6 +79,7 @@ const NAV: NavItem[] = [
 
 function NavNode({ item, depth = 0 }: { item: NavItem; depth?: number }) {
   const [open, setOpen] = useState(true);
+  const { pathname } = useLocation();
   const indent = depth * 12;
 
   if (item.children) {
@@ -107,9 +107,10 @@ function NavNode({ item, depth = 0 }: { item: NavItem; depth?: number }) {
   return (
     <NavLink
       to={item.to!}
-      className={({ isActive }) =>
-        `block text-[13px] py-1.5 hover:text-white transition-colors border-l-2 ${isActive ? 'text-[#f0e8dc] border-[var(--red)] bg-[#281411]' : 'text-[#aaa398] border-transparent'}`
-      }
+      className={({ isActive: exact }) => {
+        const isActive = exact || !!item.match?.some((m) => pathname.startsWith(m));
+        return `block text-[13px] py-1.5 hover:text-white transition-colors border-l-2 ${isActive ? 'text-[#f0e8dc] border-[var(--red)] bg-[#281411]' : 'text-[#aaa398] border-transparent'}`;
+      }}
       style={{ paddingLeft: `${16 + indent / 2}px` }}
     >
       {item.label}

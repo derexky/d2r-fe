@@ -20,6 +20,7 @@ import JewelList from './pages/items/JewelList';
 import CraftedItems from './pages/items/CraftedItems';
 import BaseItemIndex from './pages/items/BaseItemIndex';
 import BaseItemList from './pages/items/BaseItemList';
+import ItemsLayout from './pages/items/ItemsLayout';
 import ShrineList from './pages/shrines/ShrineList';
 import MagicFind from './pages/mechanics/MagicFind';
 import DiabloClone from './pages/mechanics/DiabloClone';
@@ -45,16 +46,18 @@ export default function App() {
       <Routes>
         <Route element={<AppShell />}>
           <Route index element={<Home />} />
-          <Route path="items/unique" element={<UniqueIndex />} />
-          <Route path="items/unique/:category" element={<UniqueList />} />
-          <Route path="items/sets" element={<SetIndex />} />
-          <Route path="items/sets/:id" element={<SetDetail />} />
-          <Route path="items/class" element={<Navigate to="/items/class/barbarian" replace />} />
-          <Route path="items/class/:class" element={<ClassItems />} />
+          <Route element={<ItemsLayout />}>
+            <Route path="items/base" element={<BaseItemIndex />} />
+            <Route path="items/base/:gid" element={<BaseItemList />} />
+            <Route path="items/unique" element={<UniqueIndex />} />
+            <Route path="items/unique/:category" element={<UniqueList />} />
+            <Route path="items/sets" element={<SetIndex />} />
+            <Route path="items/sets/:id" element={<SetDetail />} />
+            <Route path="items/class" element={<Navigate to="/items/class/barbarian" replace />} />
+            <Route path="items/class/:class" element={<ClassItems />} />
+          </Route>
           <Route path="items/jewels" element={<JewelList />} />
           <Route path="items/crafted" element={<CraftedItems />} />
-          <Route path="items/base" element={<BaseItemIndex />} />
-          <Route path="items/base/:gid" element={<BaseItemList />} />
           <Route path="runes" element={<RuneList />} />
           <Route path="gems" element={<GemList />} />
           <Route path="cube" element={<CubeRecipes />} />
