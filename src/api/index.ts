@@ -35,6 +35,10 @@ export const api = {
   getAnnouncements: () =>
     client.get('/announcements').then((r) => r.data.data),
 
+  // Affixes (reference endpoints return bare arrays)
+  getAffixes: (params?: Record<string, string>) =>
+    client.get('/affixes', { params }).then((r) => r.data),
+
   // Base items
   getBaseItems: (params?: Record<string, string>) =>
     client.get('/base-items', { params }).then((r) => r.data.data),

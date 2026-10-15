@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { api } from '../../api';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
@@ -114,6 +114,13 @@ export default function BaseItemList() {
                   {item.max_sockets != null && item.max_sockets > 0 && (
                     <span className="ml-2">最大孔數 {item.max_sockets}</span>
                   )}
+                  <Link
+                    to={`/magic/affixes?base=${item.id}&name=${encodeURIComponent(item.name_zh)}`}
+                    className="ml-2 hover:underline"
+                    style={{ color: '#00aaaa' }}
+                  >
+                    可出詞綴
+                  </Link>
                 </div>
                 {item.attrs && <AttrsDisplay attrsJson={item.attrs} />}
               </div>
