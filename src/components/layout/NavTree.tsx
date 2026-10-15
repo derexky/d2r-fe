@@ -32,14 +32,7 @@ const NAV: NavItem[] = [
   {
     label: '職業攻略',
     children: [
-      { label: '野蠻人', to: '/builds/barbarian' },
-      { label: '亞馬遜', to: '/builds/amazon' },
-      { label: '法師', to: '/builds/sorceress' },
-      { label: '死靈法師', to: '/builds/necromancer' },
-      { label: '聖騎士', to: '/builds/paladin' },
-      { label: '德魯伊', to: '/builds/druid' },
-      { label: '刺客', to: '/builds/assassin' },
-      { label: '術士', to: '/builds/warlock' },
+      { label: '各職業流派', to: '/builds' },
     ],
   },
   {
