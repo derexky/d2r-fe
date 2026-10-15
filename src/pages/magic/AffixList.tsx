@@ -117,7 +117,8 @@ export default function AffixList() {
         )}
       </div>
 
-      {isLoading ? (
+      {/* rare names are bundled data, so that view does not wait for the affix API */}
+      {isLoading && view !== 'names' ? (
         <LoadingSpinner />
       ) : view === 'charms' ? (
         <CharmAffixTable affixes={rows} />
