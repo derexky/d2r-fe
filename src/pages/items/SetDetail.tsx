@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { api } from '../../api';
 import StatList from '../../components/ui/StatList';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import BackButton from '../../components/ui/BackButton';
 
 interface SetMember {
   id: number;
@@ -40,10 +41,11 @@ export default function SetDetail() {
   });
 
   if (loading) return <LoadingSpinner />;
-  if (!set) return <p className="text-red-400">找不到套裝</p>;
+  if (!set) return <><BackButton fallback="/items/sets" /><p className="text-red-400">找不到套裝</p></>;
 
   return (
     <div className="max-w-2xl">
+      <BackButton fallback="/items/sets" />
       <h1 className="text-xl font-bold mb-4">
         {set.name_zh}
         {set.name_en && <span className="ml-3 text-sm text-gray-400">{set.name_en}</span>}

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { api } from '../../api';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import BackButton from '../../components/ui/BackButton';
 
 interface GearItem {
   slot: string;
@@ -48,7 +49,7 @@ interface Build {
 }
 
 export default function BuildDetail() {
-  const { id } = useParams<{ id: string }>();
+  const { class: cls, id } = useParams<{ class: string; id: string }>();
 
   const { data: build, isLoading: loading } = useQuery<Build>({
     queryKey: ['build', id],
@@ -56,7 +57,7 @@ export default function BuildDetail() {
   });
 
   if (loading) return <LoadingSpinner />;
-  if (!build) return <p className="text-red-400">找不到攻略</p>;
+  if (!build) return <><BackButton fallback={`/builds/${cls}`} label="返回流派列表" /><p className="text-red-400">找不到攻略</p></>;
 
   const statsObj: Record<string, string> = safeJson<Record<string, string>>(build.stats) ?? {};
   const stats: string[][] = Object.entries(statsObj);
@@ -76,6 +77,7 @@ export default function BuildDetail() {
 
   return (
     <div className="max-w-3xl">
+      <BackButton fallback={`/builds/${cls}`} label="返回流派列表" />
       <h1 className="text-xl font-bold mb-2">
         {build.name}
       </h1>

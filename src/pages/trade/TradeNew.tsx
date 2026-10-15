@@ -3,6 +3,7 @@ import { useState, useCallback } from 'react';
 import { createWorker, PSM, OEM } from 'tesseract.js';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api';
+import BackButton from '../../components/ui/BackButton';
 
 const CATEGORIES = [
   { label: '請選擇', value: '' },
@@ -228,6 +229,7 @@ export default function TradeNew() {
 
   return (
     <div>
+      <BackButton fallback="/trade" />
       <h1 className="text-xl font-bold mb-4">
         建立交易掛單
       </h1>

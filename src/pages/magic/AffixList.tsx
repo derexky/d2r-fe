@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../../api';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import BackButton from '../../components/ui/BackButton';
 import { type Affix, GID_LABELS } from './affixTypes';
 import CharmAffixTable from './CharmAffixTable';
 
@@ -36,6 +37,7 @@ export default function AffixList() {
 
   return (
     <div className="text-sm">
+      {base && <BackButton fallback="/items/base" label="返回底材" />}
       <h1 className="text-xl font-bold mb-1">
         魔法字首字尾
       </h1>

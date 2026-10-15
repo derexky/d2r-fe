@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { api } from '../../api';
 import StatList from '../../components/ui/StatList';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import BackButton from '../../components/ui/BackButton';
 
 interface Item {
   id: number;
@@ -41,6 +42,7 @@ export default function UniqueList() {
 
   return (
     <div>
+      <BackButton fallback="/items/unique" />
       <h1 className="text-xl font-bold mb-3">
         獨特裝備 — {category}
       </h1>

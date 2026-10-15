@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../../api';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import BackButton from '../../components/ui/BackButton';
 
 interface BaseItem {
   id: number;
@@ -61,6 +62,7 @@ export default function BaseItemList() {
 
   return (
     <div>
+      <BackButton fallback="/items/base" />
       <h1 className="text-xl font-bold mb-3">
         基礎裝備 — {GID_LABELS[gid!] ?? gid}
       </h1>
