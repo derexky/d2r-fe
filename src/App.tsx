@@ -30,7 +30,6 @@ import AreaLevels from './pages/mechanics/AreaLevels';
 import Formulas from './pages/mechanics/Formulas';
 import SuperBoss from './pages/mechanics/SuperBoss';
 import AffixList from './pages/magic/AffixList';
-import RareNames from './pages/magic/RareNames';
 import LevelUp from './pages/mechanics/LevelUp';
 import MaxSockets from './pages/mechanics/MaxSockets';
 import Alvl85 from './pages/mechanics/Alvl85';
@@ -71,7 +70,7 @@ export default function App() {
           <Route path="super-boss" element={<SuperBoss />} />
           <Route path="magic/affixes" element={<AffixList />} />
           <Route path="magic/charm-affixes" element={<Navigate to="/magic/affixes?view=charms" replace />} />
-          <Route path="magic/rare-names" element={<RareNames />} />
+          <Route path="magic/rare-names" element={<Navigate to="/magic/affixes?view=names" replace />} />
           <Route path="runewords" element={<RunewordList />} />
           <Route path="runewords/:slot" element={<RunewordList />} />
           <Route path="builds" element={<BuildIndex />} />

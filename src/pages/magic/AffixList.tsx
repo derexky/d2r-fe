@@ -6,18 +6,20 @@ import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import BackButton from '../../components/ui/BackButton';
 import { type Affix, GID_LABELS } from './affixTypes';
 import CharmAffixTable from './CharmAffixTable';
+import RareNameTable from './RareNameTable';
 
-const VIEWS = { all: '全部詞綴', charms: '咒符對照' } as const;
+const VIEWS = { all: '全部詞綴', rare: '稀有裝備', charms: '咒符對照', names: '稀有名稱' } as const;
+type View = keyof typeof VIEWS;
 
 export default function AffixList() {
   const [tab, setTab] = useState<'前綴' | '後綴'>('前綴');
   const [search, setSearch] = useState('');
-  const [gid, setGid] = useState('');
-  const [rareOnly, setRareOnly] = useState(false);
   const [params, setParams] = useSearchParams();
+  const [gid, setGid] = useState(params.get('type') ?? '');
   const base = params.get('base');
-  // ?view=charms keeps the old /magic/charm-affixes link working (it redirects here)
-  const view: keyof typeof VIEWS = !base && params.get('view') === 'charms' ? 'charms' : 'all';
+  // ?view= is linkable: the old /magic/charm-affixes and /magic/rare-names pages redirect here
+  const requested = params.get('view') as View | null;
+  const view: View = !base && requested && requested in VIEWS ? requested : 'all';
 
   const { data: affixes = [], isLoading } = useQuery<Affix[]>({
     queryKey: ['affixes', base],
@@ -28,12 +30,12 @@ export default function AffixList() {
     const q = search.trim().toLowerCase();
     return affixes.filter(a => {
       if (a.kind !== tab) return false;
-      if (view === 'all' && gid && !a.types.includes(gid)) return false;
-      if (view === 'all' && rareOnly && !a.rare) return false;
+      if (view !== 'charms' && gid && !a.types.includes(gid)) return false;
+      if (view === 'rare' && !a.rare) return false;
       if (q && !`${a.name_zh} ${a.name_en ?? ''} ${a.stats.join(' ')}`.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [affixes, tab, search, gid, rareOnly, view]);
+  }, [affixes, tab, search, gid, view]);
 
   return (
     <div className="text-sm">
@@ -50,13 +52,13 @@ export default function AffixList() {
         alvl 為詞綴等級（物品等級需 ≥ alvl 才可能出現）；標示「稀有」者亦會出現在稀有裝備
       </p>
 
-      {/* View: every affix, or charm affixes side by side per charm size */}
+      {/* View: every affix, those that also roll on rare items, charm affixes per size, or rare item names */}
       {!base && (
         <div className="flex gap-1 mb-2">
-          {(Object.keys(VIEWS) as (keyof typeof VIEWS)[]).map(v => (
+          {(Object.keys(VIEWS) as View[]).map(v => (
             <button
               key={v}
-              onClick={() => setParams(v === 'charms' ? { view: v } : {})}
+              onClick={() => setParams(v === 'all' ? {} : { view: v })}
               className="px-3 py-1 text-xs border transition-colors"
               style={{
                 borderColor: view === v ? '#cc9900' : '#2a2620',
@@ -97,7 +99,7 @@ export default function AffixList() {
           className="px-2 py-1 text-xs border outline-none"
           style={{ background: '#11100e', borderColor: '#2a2620', color: '#e0e0e0', width: 200 }}
         />
-        {view === 'all' && (
+        {view !== 'charms' && (
           <>
             <select
               value={gid}
@@ -106,13 +108,11 @@ export default function AffixList() {
               style={{ background: '#11100e', borderColor: '#2a2620', color: gid ? '#e0e0e0' : '#666' }}
             >
               <option value="">全部物品類型</option>
-              {Object.entries(GID_LABELS).map(([g, label]) => <option key={g} value={g}>{label}</option>)}
+              {Object.entries(GID_LABELS)
+                .filter(([g]) => view === 'all' || !g.endsWith('charms')) /* no rare charms */
+                .map(([g, label]) => <option key={g} value={g}>{label}</option>)}
             </select>
-            <label className="text-xs self-center flex items-center gap-1" style={{ color: '#888' }}>
-              <input type="checkbox" checked={rareOnly} onChange={e => setRareOnly(e.target.checked)} />
-              只看稀有可出
-            </label>
-            <span className="text-xs self-center" style={{ color: '#666' }}>{rows.length} 筆</span>
+            {view !== 'names' && <span className="text-xs self-center" style={{ color: '#666' }}>{rows.length} 筆</span>}
           </>
         )}
       </div>
@@ -121,6 +121,8 @@ export default function AffixList() {
         <LoadingSpinner />
       ) : view === 'charms' ? (
         <CharmAffixTable affixes={rows} />
+      ) : view === 'names' ? (
+        <RareNameTable kind={tab} search={search} gid={gid} onShowRare={() => setParams({ view: 'rare' })} />
       ) : (
         <div className="overflow-x-auto">
           <table className="text-xs border-collapse w-full">
