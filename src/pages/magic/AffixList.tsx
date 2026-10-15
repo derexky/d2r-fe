@@ -4,14 +4,19 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../../api';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { type Affix, GID_LABELS } from './affixTypes';
+import CharmAffixTable from './CharmAffixTable';
+
+const VIEWS = { all: '全部詞綴', charms: '咒符對照' } as const;
 
 export default function AffixList() {
   const [tab, setTab] = useState<'前綴' | '後綴'>('前綴');
   const [search, setSearch] = useState('');
   const [gid, setGid] = useState('');
   const [rareOnly, setRareOnly] = useState(false);
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const base = params.get('base');
+  // ?view=charms keeps the old /magic/charm-affixes link working (it redirects here)
+  const view: keyof typeof VIEWS = !base && params.get('view') === 'charms' ? 'charms' : 'all';
 
   const { data: affixes = [], isLoading } = useQuery<Affix[]>({
     queryKey: ['affixes', base],
@@ -22,12 +27,12 @@ export default function AffixList() {
     const q = search.trim().toLowerCase();
     return affixes.filter(a => {
       if (a.kind !== tab) return false;
-      if (gid && !a.types.includes(gid)) return false;
-      if (rareOnly && !a.rare) return false;
+      if (view === 'all' && gid && !a.types.includes(gid)) return false;
+      if (view === 'all' && rareOnly && !a.rare) return false;
       if (q && !`${a.name_zh} ${a.name_en ?? ''} ${a.stats.join(' ')}`.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [affixes, tab, search, gid, rareOnly]);
+  }, [affixes, tab, search, gid, rareOnly, view]);
 
   return (
     <div className="text-sm">
@@ -42,6 +47,26 @@ export default function AffixList() {
       <p className="text-xs text-gray-500 mb-3">
         alvl 為詞綴等級（物品等級需 ≥ alvl 才可能出現）；標示「稀有」者亦會出現在稀有裝備
       </p>
+
+      {/* View: every affix, or charm affixes side by side per charm size */}
+      {!base && (
+        <div className="flex gap-1 mb-2">
+          {(Object.keys(VIEWS) as (keyof typeof VIEWS)[]).map(v => (
+            <button
+              key={v}
+              onClick={() => setParams(v === 'charms' ? { view: v } : {})}
+              className="px-3 py-1 text-xs border transition-colors"
+              style={{
+                borderColor: view === v ? '#cc9900' : '#2a2620',
+                color: view === v ? '#ffcc00' : '#666',
+                background: view === v ? '#1a1400' : 'transparent',
+              }}
+            >
+              {VIEWS[v]}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Prefix/Suffix tabs */}
       <div className="flex gap-1 mb-3">
@@ -70,24 +95,30 @@ export default function AffixList() {
           className="px-2 py-1 text-xs border outline-none"
           style={{ background: '#11100e', borderColor: '#2a2620', color: '#e0e0e0', width: 200 }}
         />
-        <select
-          value={gid}
-          onChange={e => setGid(e.target.value)}
-          className="px-2 py-1 text-xs border outline-none"
-          style={{ background: '#11100e', borderColor: '#2a2620', color: gid ? '#e0e0e0' : '#666' }}
-        >
-          <option value="">全部物品類型</option>
-          {Object.entries(GID_LABELS).map(([g, label]) => <option key={g} value={g}>{label}</option>)}
-        </select>
-        <label className="text-xs self-center flex items-center gap-1" style={{ color: '#888' }}>
-          <input type="checkbox" checked={rareOnly} onChange={e => setRareOnly(e.target.checked)} />
-          只看稀有可出
-        </label>
-        <span className="text-xs self-center" style={{ color: '#666' }}>{rows.length} 筆</span>
+        {view === 'all' && (
+          <>
+            <select
+              value={gid}
+              onChange={e => setGid(e.target.value)}
+              className="px-2 py-1 text-xs border outline-none"
+              style={{ background: '#11100e', borderColor: '#2a2620', color: gid ? '#e0e0e0' : '#666' }}
+            >
+              <option value="">全部物品類型</option>
+              {Object.entries(GID_LABELS).map(([g, label]) => <option key={g} value={g}>{label}</option>)}
+            </select>
+            <label className="text-xs self-center flex items-center gap-1" style={{ color: '#888' }}>
+              <input type="checkbox" checked={rareOnly} onChange={e => setRareOnly(e.target.checked)} />
+              只看稀有可出
+            </label>
+            <span className="text-xs self-center" style={{ color: '#666' }}>{rows.length} 筆</span>
+          </>
+        )}
       </div>
 
       {isLoading ? (
         <LoadingSpinner />
+      ) : view === 'charms' ? (
+        <CharmAffixTable affixes={rows} />
       ) : (
         <div className="overflow-x-auto">
           <table className="text-xs border-collapse w-full">

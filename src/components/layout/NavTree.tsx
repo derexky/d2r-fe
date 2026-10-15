@@ -19,7 +19,6 @@ const NAV: NavItem[] = [
       { label: '手工製作', to: '/items/crafted' },
       { label: '方塊合成', to: '/cube' },
       { label: '魔法字首字尾', to: '/magic/affixes' },
-      { label: '飾品詞綴', to: '/magic/charm-affixes' },
       { label: '稀有裝備名稱', to: '/magic/rare-names' },
     ],
   },
