@@ -1,126 +1,77 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../../api';
 
-const S = {
-  btn: {
-    background: 'transparent', border: '1px solid #3a352d', color: 'var(--muted)',
-    padding: '4px 12px', borderRadius: '2px', fontSize: '12px', cursor: 'pointer',
-  },
-  btnActive: {
-    background: '#1a1712', border: '1px solid var(--gold)', color: 'var(--gold)',
-    padding: '4px 12px', borderRadius: '2px', fontSize: '12px', cursor: 'pointer',
-  },
-  card: { border: '1px solid var(--line)', background: 'var(--panel)', borderRadius: '2px', padding: '10px 12px', marginBottom: '8px' },
-};
+const chip = (active: boolean) => ({
+  padding: '4px 10px', fontSize: '12px', borderRadius: '2px', cursor: 'pointer',
+  background: active ? '#1a1712' : 'transparent',
+  border: `1px solid ${active ? 'var(--gold)' : '#3a352d'}`,
+  color: active ? 'var(--gold)' : 'var(--muted)',
+});
 
-type Mode = 'sc' | 'hc';
-
-function tsToDate(ts?: { _seconds: number }): string {
-  if (!ts) return '—';
-  return new Date(ts._seconds * 1000).toLocaleString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-}
-
-interface PriceItem { name: string; quantity: number }
-interface PriceStats {
-  synced_at?: { _seconds: number };
-  price?: { count: number; top: { items: PriceItem[]; freq: number }[] };
-  trade_window?: { earliest?: { _seconds: number }; latest?: { _seconds: number } };
-}
-
+// Tracked items by category; each item opens its price stats on /traderie/:item
 export default function TraderiePage() {
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
-  const [ladder, setLadder] = useState(true);
-  const [mode, setMode] = useState<Mode>('sc');
   const [search, setSearch] = useState('');
+  // kept in the URL so coming back from an item returns to the same category
+  const [params, setParams] = useSearchParams();
 
-  const { data: groups = [], isLoading: itemsLoading } = useQuery({
+  const { data: groups = [], isLoading } = useQuery({
     queryKey: ['price-tracked-groups'],
     queryFn: () => api.priceTrackedGroups(),
     staleTime: Infinity,
   });
 
-  const { data: stats, isFetching: statsLoading } = useQuery<PriceStats>({
-    queryKey: ['price-latest', selectedItem, ladder, mode],
-    queryFn: () => api.priceLatest(selectedItem!, ladder, mode),
-    enabled: !!selectedItem,
-  });
-
+  // one category at a time, or every match grouped by category while searching
+  const activeCategory = params.get('c') ?? groups[0]?.category;
   const q = search.trim().toLowerCase();
-  const filtered = groups
-    .map((g) => ({ ...g, items: g.items.filter((i) => i.toLowerCase().includes(q)) }))
-    .filter((g) => g.items.length > 0);
+  const shown = q
+    ? groups
+        .map((g) => ({ ...g, items: g.items.filter((i) => `${i} ${g.zh?.[i] ?? ''}`.toLowerCase().includes(q)) }))
+        .filter((g) => g.items.length > 0)
+    : groups.filter((g) => g.category === activeCategory);
 
   return (
     <div>
       <h1 className="text-xl font-bold" style={{ marginBottom: '12px' }}>成交價格統計</h1>
 
-      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' as const }}>
-        {/* 物品清單 */}
-        <div className="w-full sm:w-[200px] max-h-56 sm:max-h-[calc(100vh-100px)]" style={{ flexShrink: 0, display: 'flex', flexDirection: 'column' as const }}>
-          <input
-            placeholder="搜尋物品…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ width: '100%', background: 'var(--panel)', border: '1px solid #3a352d', color: 'var(--ink)', padding: '5px 8px', borderRadius: '2px', fontSize: '12px', outline: 'none', marginBottom: '6px', boxSizing: 'border-box' as const }}
-          />
-          <div style={{ overflowY: 'auto' as const, flex: 1 }}>
-          {itemsLoading && <div style={{ color: 'var(--muted)', fontSize: '12px' }}>載入中…</div>}
-          {filtered.map((g) => (
-            <div key={g.category}>
-              <div style={{ color: 'var(--gold)', fontSize: '11px', letterSpacing: '0.1em', padding: '8px 8px 4px' }}>{g.category}</div>
-              {g.items.map((item) => (
-                <div key={item}
-                  onClick={() => setSelectedItem(item)}
-                  style={{ padding: '5px 8px', cursor: 'pointer', borderRadius: '2px', fontSize: '13px', marginBottom: '2px', background: selectedItem === item ? '#1a1712' : 'transparent', border: `1px solid ${selectedItem === item ? 'var(--gold)' : 'transparent'}`, color: selectedItem === item ? 'var(--gold)' : 'var(--muted)' }}>
-                  {item}
-                </div>
-              ))}
-            </div>
+      {/* search + categories stay pinned while the item list scrolls */}
+      <div style={{ position: 'sticky', top: 0, zIndex: 1, background: '#0b0b0a', padding: '8px 0 10px', marginBottom: '12px', borderBottom: '1px solid var(--line)' }}>
+        <input
+          placeholder="搜尋物品（中文或英文）…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ width: '100%', maxWidth: '320px', background: 'var(--panel)', border: '1px solid #3a352d', color: 'var(--ink)', padding: '6px 10px', borderRadius: '2px', fontSize: '13px', outline: 'none', marginBottom: '10px', display: 'block' }}
+        />
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+          {groups.map((g) => (
+            <button key={g.category} style={chip(!q && g.category === activeCategory)}
+              onClick={() => { setParams({ c: g.category }, { replace: true }); setSearch(''); }}>
+              {g.category} <span style={{ fontSize: '11px', opacity: 0.7 }}>{g.items.length}</span>
+            </button>
           ))}
-          </div>
-        </div>
-
-        {/* 統計面板 */}
-        <div style={{ flex: 1, minWidth: '280px' }}>
-          {!selectedItem && (
-            <div style={{ color: '#6b665d', fontSize: '13px', paddingTop: '8px' }}>← 選擇物品查看成交統計</div>
-          )}
-
-          {selectedItem && (
-            <>
-              <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', flexWrap: 'wrap' as const }}>
-                <button style={ladder ? S.btnActive : S.btn} onClick={() => setLadder(true)}>Ladder</button>
-                <button style={!ladder ? S.btnActive : S.btn} onClick={() => setLadder(false)}>Non-Ladder</button>
-                <button style={mode === 'sc' ? S.btnActive : S.btn} onClick={() => setMode('sc')}>Softcore</button>
-                <button style={mode === 'hc' ? S.btnActive : S.btn} onClick={() => setMode('hc')}>Hardcore</button>
-              </div>
-
-              {statsLoading && <div style={{ color: 'var(--muted)', fontSize: '12px' }}>載入中…</div>}
-              {!statsLoading && !stats && <div style={{ color: 'var(--muted)', fontSize: '12px' }}>尚無資料</div>}
-              {stats && (
-                <div style={S.card}>
-                  <div style={{ display: 'flex', gap: '16px', fontSize: '11px', color: 'var(--muted)', marginBottom: '10px' }}>
-                    <span>樣本 <span style={{ color: 'var(--ink)' }}>{stats.price?.count ?? 0} 筆</span></span>
-                    <span>成交區間 <span style={{ color: 'var(--ink)' }}>{tsToDate(stats.trade_window?.earliest)} – {tsToDate(stats.trade_window?.latest)}</span></span>
-                    <span>更新 <span style={{ color: 'var(--ink)' }}>{tsToDate(stats.synced_at)}</span></span>
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#9a7d42', marginBottom: '6px', textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>常見成交價</div>
-                  {stats.price?.top?.length ? stats.price.top.map((entry, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 0', borderBottom: '1px solid #191714' }}>
-                      <span style={{ color: '#6b665d', fontSize: '11px', minWidth: '24px' }}>#{i + 1}</span>
-                      <span style={{ color: '#ffa040', flex: 1, fontSize: '13px' }}>
-                        {entry.items.map((it) => `${it.quantity > 1 ? it.quantity + '× ' : ''}${it.name}`).join(' + ')}
-                      </span>
-                      <span style={{ color: 'var(--muted)', fontSize: '11px' }}>{entry.freq} 次</span>
-                    </div>
-                  )) : <div style={{ color: 'var(--muted)', fontSize: '12px' }}>—</div>}
-                </div>
-              )}
-            </>
-          )}
         </div>
       </div>
+
+      {isLoading && <div style={{ color: 'var(--muted)', fontSize: '13px' }}>載入中…</div>}
+      {q && shown.length === 0 && <div style={{ color: 'var(--muted)', fontSize: '13px' }}>找不到符合的物品</div>}
+
+      {shown.map((g) => (
+        <div key={g.category} style={{ marginBottom: '14px' }}>
+          {q && <div style={{ color: 'var(--gold)', fontSize: '12px', letterSpacing: '0.1em', marginBottom: '6px' }}>{g.category}</div>}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: '6px' }}>
+            {g.items.map((item) => (
+              <Link key={item} to={`/traderie/${encodeURIComponent(item)}`}
+                className="hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors"
+                style={{ display: 'block', padding: '8px 10px', fontSize: '13px', border: '1px solid var(--line)', background: 'var(--panel)', borderRadius: '2px', color: 'var(--ink)' }}>
+                <div>{g.zh?.[item] ?? item}</div>
+                {g.zh?.[item] && <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '2px' }}>{item}</div>}
+              </Link>
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
