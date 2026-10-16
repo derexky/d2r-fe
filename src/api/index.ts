@@ -62,8 +62,8 @@ export const api = {
   }) => client.post('/trades', body).then((r) => r.data.data),
 
   // Price stats
-  priceTrackedItems: (): Promise<string[]> =>
-    client.get('/prices/items').then((r) => r.data),
+  priceTrackedGroups: (): Promise<{ category: string; items: string[] }[]> =>
+    client.get('/prices/groups').then((r) => r.data),
   priceLatest: (item: string, ladder: boolean, mode: 'sc' | 'hc') =>
     client.get('/prices/latest', { params: { item, ladder, mode } }).then((r) => r.data),
 

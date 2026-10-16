@@ -34,9 +34,9 @@ export default function TraderiePage() {
   const [mode, setMode] = useState<Mode>('sc');
   const [search, setSearch] = useState('');
 
-  const { data: trackedItems = [], isLoading: itemsLoading } = useQuery({
-    queryKey: ['price-tracked-items'],
-    queryFn: () => api.priceTrackedItems(),
+  const { data: groups = [], isLoading: itemsLoading } = useQuery({
+    queryKey: ['price-tracked-groups'],
+    queryFn: () => api.priceTrackedGroups(),
     staleTime: Infinity,
   });
 
@@ -46,9 +46,10 @@ export default function TraderiePage() {
     enabled: !!selectedItem,
   });
 
-  const filtered = search.trim()
-    ? trackedItems.filter((i) => i.toLowerCase().includes(search.trim().toLowerCase()))
-    : trackedItems;
+  const q = search.trim().toLowerCase();
+  const filtered = groups
+    .map((g) => ({ ...g, items: g.items.filter((i) => i.toLowerCase().includes(q)) }))
+    .filter((g) => g.items.length > 0);
 
   return (
     <div>
@@ -65,11 +66,16 @@ export default function TraderiePage() {
           />
           <div style={{ overflowY: 'auto' as const, flex: 1 }}>
           {itemsLoading && <div style={{ color: 'var(--muted)', fontSize: '12px' }}>載入中…</div>}
-          {filtered.map((item) => (
-            <div key={item}
-              onClick={() => setSelectedItem(item)}
-              style={{ padding: '5px 8px', cursor: 'pointer', borderRadius: '2px', fontSize: '13px', marginBottom: '2px', background: selectedItem === item ? '#1a1712' : 'transparent', border: `1px solid ${selectedItem === item ? 'var(--gold)' : 'transparent'}`, color: selectedItem === item ? 'var(--gold)' : 'var(--muted)' }}>
-              {item}
+          {filtered.map((g) => (
+            <div key={g.category}>
+              <div style={{ color: 'var(--gold)', fontSize: '11px', letterSpacing: '0.1em', padding: '8px 8px 4px' }}>{g.category}</div>
+              {g.items.map((item) => (
+                <div key={item}
+                  onClick={() => setSelectedItem(item)}
+                  style={{ padding: '5px 8px', cursor: 'pointer', borderRadius: '2px', fontSize: '13px', marginBottom: '2px', background: selectedItem === item ? '#1a1712' : 'transparent', border: `1px solid ${selectedItem === item ? 'var(--gold)' : 'transparent'}`, color: selectedItem === item ? 'var(--gold)' : 'var(--muted)' }}>
+                  {item}
+                </div>
+              ))}
             </div>
           ))}
           </div>
