@@ -1,5 +1,5 @@
 // d2r-fe/src/pages/trade/TradeNew.tsx
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { createWorker, PSM, OEM } from 'tesseract.js';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api';
@@ -94,22 +94,49 @@ function fixOcrText(raw: string): string {
     .split('\n').map((l) => l.trim()).filter(Boolean).join('\n');
 }
 
+// D2R tooltips are light text (gold/blue/white/grey) on a near-black panel; the dimmest
+// text colours land around gray 100, the panel well below. Tune if dim lines go missing.
+const OCR_THRESHOLD = 80;
+// Upscaling helps small crops; full-screen captures are already large enough.
+const OCR_MAX_WIDTH = 2400;
+
+// One worker for the page lifetime: loading the WASM core and both language models
+// is the slow part, so later uploads reuse it.
+let workerPromise: ReturnType<typeof createWorker> | null = null;
+let onOcrProgress: ((p: number) => void) | null = null;
+
+function getWorker() {
+  if (!workerPromise) {
+    workerPromise = createWorker('chi_tra+eng', OEM.LSTM_ONLY, {
+      logger: (m) => {
+        if (m.status === 'recognizing text') onOcrProgress?.(Math.round(m.progress * 100));
+      },
+    }).then(async (w) => {
+      await w.setParameters({ tessedit_pageseg_mode: PSM.SINGLE_BLOCK });
+      return w;
+    });
+    workerPromise.catch(() => { workerPromise = null; });
+  }
+  return workerPromise;
+}
+
 function preprocessForOCR(file: File): Promise<HTMLCanvasElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
     img.onload = () => {
+      const scale = Math.max(1, Math.min(2, OCR_MAX_WIDTH / img.width));
       const canvas = document.createElement('canvas');
-      canvas.width = img.width * 2;
-      canvas.height = img.height * 2;
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
       const ctx = canvas.getContext('2d')!;
-      ctx.imageSmoothingEnabled = false;
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const { data } = imageData;
       for (let i = 0; i < data.length; i += 4) {
-        const gray = Math.round(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
-        data[i] = data[i + 1] = data[i + 2] = gray;
+        const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+        // binarise and invert: Tesseract reads dark text on a light page best
+        data[i] = data[i + 1] = data[i + 2] = gray > OCR_THRESHOLD ? 0 : 255;
       }
       ctx.putImageData(imageData, 0, 0);
       URL.revokeObjectURL(url);
@@ -135,23 +162,21 @@ export default function TradeNew() {
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
 
+  const latestFile = useRef<File | null>(null);
+
+  useEffect(() => () => { if (imageUrl) URL.revokeObjectURL(imageUrl); }, [imageUrl]);
+
   const handleImage = useCallback(async (file: File) => {
+    latestFile.current = file;
     setImageUrl(URL.createObjectURL(file));
     setOcrProgress(0);
     setOcrRaw('');
+    onOcrProgress = setOcrProgress;
 
     try {
-      const canvas = await preprocessForOCR(file);
-      const worker = await createWorker('chi_tra+eng', OEM.LSTM_ONLY, {
-        logger: (m) => {
-          if (m.status === 'recognizing text') {
-            setOcrProgress(Math.round(m.progress * 100));
-          }
-        },
-      });
-      await worker.setParameters({ tessedit_pageseg_mode: PSM.SINGLE_BLOCK });
+      const [canvas, worker] = await Promise.all([preprocessForOCR(file), getWorker()]);
       const result = await worker.recognize(canvas);
-      await worker.terminate();
+      if (latestFile.current !== file) return; // a newer upload superseded this one
 
       const text = fixOcrText(result.data.text);
       setOcrRaw(text);
@@ -172,9 +197,9 @@ export default function TradeNew() {
         item_stats_raw: [matchedBase, ...statsLines].join('\n'),
       }));
     } catch {
-      setOcrRaw('⚠ OCR 辨識失敗，請手動填入屬性');
+      if (latestFile.current === file) setOcrRaw('⚠ OCR 辨識失敗，請手動填入屬性');
     } finally {
-      setOcrProgress(null);
+      if (latestFile.current === file) setOcrProgress(null);
     }
   }, []);
 
