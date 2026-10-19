@@ -4,7 +4,7 @@ import { createWorker, PSM, OEM, type Page, type Worker } from 'tesseract.js';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api';
 import BackButton from '../../components/ui/BackButton';
-import { findTextLines, makeLineCorrector, matchLine, mergeDigits, padLines } from './ocrText';
+import { findTextLines, inkMask, makeLineCorrector, matchLine, mergeDigits, padLines } from './ocrText';
 
 const CATEGORIES = [
   { label: '請選擇', value: '' },
@@ -56,7 +56,7 @@ function loadList(path: string): Promise<string[]> {
 
 function fixOcrText(raw: string): string {
   return raw
-    .replace(/[|{}[\]]/g, '')                                         // strip junk chars
+    .replace(/[|{}[\]“”]/g, '')                                       // strip junk chars
     .replace(/¥/g, '+')                                               // ¥ → + (D2R font)
     .replace(/(\d+)(?:96|[Zz])(?=\s|$)/gm, '$1%')                    // N96 / NZ → N% (D2R % font)
     .replace(/(\d+)\s*有\s*%/g, '$1%')                               // N 有 % → N% (same glyph)
@@ -64,24 +64,31 @@ function fixOcrText(raw: string): string {
     .split('\n').map((l) => l.trim()).filter(Boolean).join('\n');
 }
 
-// D2R tooltips are light text (gold/blue/white/grey) on a near-black panel; the dimmest
-// text colours land around gray 100, the panel well below. Only used to find the text lines;
-// recognition runs on the inverted grayscale, whose anti-aliasing keeps thin CJK strokes.
+// mouse hints D2R prints under every tooltip (Shift + 左鍵點擊以裝備, 按住 Shift 鍵進行比較)
+const UI_HINT = /左鍵點擊|鍵進行比較/;
+
+// D2R tooltips are light text (gold/blue/white/grey/red) on a near-black panel. Brightness is
+// the strongest RGB channel, so blue and red stats stand out as much as white; the dimmest
+// text (grey) lands around 100, the panel well below. Only used to find the text lines;
+// recognition runs on the inverted image, whose anti-aliasing keeps thin CJK strokes.
 // Tune if dim lines go missing.
 const OCR_THRESHOLD = 80;
 // Text-line height (px) the image is rescaled to; Tesseract reads CJK glyphs best around here.
 const OCR_LINE_HEIGHT = 36;
 const OCR_MAX_WIDTH = 4000;
+// Lines chi_tra scores below this are item icons, inventory grid or scenery read as text.
+const OCR_MIN_LINE_CONFIDENCE = 30;
 
 // Workers live for the page lifetime: loading the WASM core and the language models is
 // the slow part, so later uploads reuse them. chi_tra reads the Chinese, eng the numbers
-// (see mergeDigits).
+// (see mergeDigits). Not 'chi_tra+eng': per word it may pick the English model and turn
+// Chinese into Latin junk (行走速度 → TERE); chi_tra still reads the Latin abbreviations.
 let workersPromise: Promise<Worker[]> | null = null;
 
 function getWorkers() {
   if (!workersPromise) {
     workersPromise = Promise.all(
-      ['chi_tra+eng', 'eng'].map(async (lang) => {
+      ['chi_tra', 'eng'].map(async (lang) => {
         const w = await createWorker(lang, OEM.LSTM_ONLY);
         await w.setParameters({ tessedit_pageseg_mode: PSM.SINGLE_LINE });
         return w;
@@ -115,7 +122,7 @@ function invertedGray(img: HTMLImageElement, scale: number) {
   const { data } = imageData;
   for (let i = 0; i < data.length; i += 4) {
     // invert: Tesseract reads dark text on a light page best
-    data[i] = data[i + 1] = data[i + 2] = 255 - (0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
+    data[i] = data[i + 1] = data[i + 2] = 255 - Math.max(data[i], data[i + 1], data[i + 2]);
   }
   ctx.putImageData(imageData, 0, 0);
   return { canvas, data };
@@ -126,14 +133,20 @@ async function preprocessForOCR(file: File) {
   const img = await loadImage(file);
   const inkBelow = 255 - OCR_THRESHOLD;
   const probe = invertedGray(img, 1);
-  const heights = findTextLines(probe.data, img.width, img.height, 4, inkBelow)
+  // line height is unknown yet: strokes taller than 8% of the image cannot be text
+  const probeMask = inkMask(probe.data, img.width, img.height, inkBelow, Math.max(24, img.height * 0.08));
+  const heights = findTextLines(probeMask, img.width, img.height, 4)
     .map((l) => l.bottom - l.top)
     .sort((a, b) => a - b);
   if (!heights.length) throw new Error('no text found');
   const median = heights[heights.length >> 1];
   const scale = Math.min(4, OCR_LINE_HEIGHT / median, OCR_MAX_WIDTH / img.width);
   const { canvas, data } = Math.abs(scale - 1) < 0.05 ? probe : invertedGray(img, scale);
-  const lines = findTextLines(data, canvas.width, canvas.height, Math.round(OCR_LINE_HEIGHT * 0.4), inkBelow);
+  const mask = inkMask(data, canvas.width, canvas.height, inkBelow, OCR_LINE_HEIGHT * 1.5);
+  // paint the dropped grid lines white so Tesseract does not read them as | or 1
+  for (let i = 0; i < mask.length; i++) if (!mask[i] && data[i * 4] < inkBelow) data[i * 4] = data[i * 4 + 1] = data[i * 4 + 2] = 255;
+  canvas.getContext('2d')!.putImageData(new ImageData(data, canvas.width, canvas.height), 0, 0);
+  const lines = findTextLines(mask, canvas.width, canvas.height, Math.round(OCR_LINE_HEIGHT * 0.4));
   // real crops: Tesseract's `rectangle` option returned garbage for line-sized regions
   return padLines(lines, canvas.height).map(({ top, bottom }) => {
     const crop = document.createElement('canvas');
@@ -175,13 +188,14 @@ export default function TradeNew() {
       for (const [i, band] of bands.entries()) {
         const [c, e] = await Promise.all([chi, eng].map((w) => w.recognize(band, {}, { blocks: true })));
         if (latestFile.current !== file) return; // a newer upload superseded this one
-        parts.push(mergeDigits(ocrWords(c.data), ocrWords(e.data)));
+        if (c.data.confidence >= OCR_MIN_LINE_CONFIDENCE) parts.push(mergeDigits(ocrWords(c.data), ocrWords(e.data)));
         setOcrProgress(Math.round(((i + 1) / bands.length) * 100));
       }
 
       const text = fixOcrText(parts.join('\n'));
+      if (!text) throw new Error('no text recognised');
       setOcrRaw(text);
-      const lines = text.split('\n');
+      const lines = text.split('\n').filter((l) => !UI_HINT.test(l));
 
       const [itemNames, baseItemNames, terms] = await Promise.all([
         loadList('/data/item-names.json'),
@@ -296,6 +310,7 @@ export default function TradeNew() {
               <>
                 <div style={{ fontSize: '24px' }}>📷</div>
                 <div style={{ color: '#555', fontSize: '12px' }}>拖曳或點選 D2R 截圖</div>
+                <div style={{ color: '#423c33', fontSize: '11px' }}>裁切到只剩物品說明框，辨識會準很多</div>
               </>
             )}
           </div>
