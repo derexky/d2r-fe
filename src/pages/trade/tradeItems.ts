@@ -7,6 +7,7 @@ export interface TradeItem {
   category: string | null;
   slot?: string;
   sockets?: number;
+  types?: string[];
 }
 
 const SLOT_LABEL: Record<string, string> = { weapon: '武器', armor: '盔甲', shield: '盾牌', helm: '頭盔' };
@@ -41,9 +42,21 @@ export function itemLabel(t: TradeItem): string {
   return `${t.name}（${kind}）`;
 }
 
-// A base can take a runeword when it goes in the same slot and has enough sockets
+// Same check as d2r-service: same slot, enough sockets and an allowed item type
 export const fitsRuneword = (base: TradeItem, runeword: TradeItem) =>
-  base.kind === 'base' && base.slot === runeword.slot && (base.sockets ?? 0) >= (runeword.sockets ?? 0);
+  base.kind === 'base' &&
+  base.slot === runeword.slot &&
+  (base.sockets ?? 0) >= (runeword.sockets ?? 0) &&
+  (!runeword.types || !!base.types?.some((t) => runeword.types!.includes(t)));
+
+// Dropdown options for the bases a runeword can be made in, sorted by label
+export const runewordBaseOptions = (items: TradeItem[], runeword: TradeItem | undefined) =>
+  runeword
+    ? items
+        .filter((t) => fitsRuneword(t, runeword))
+        .map((t) => ({ ref: t.ref, label: itemLabel(t) }))
+        .sort((a, b) => a.label.localeCompare(b.label, 'zh-Hant'))
+    : [];
 
 // Item quality, only recorded for bases; colours follow the in-game item names
 export const QUALITIES = [

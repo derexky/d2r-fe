@@ -6,7 +6,7 @@ import { isAxiosError } from 'axios';
 import { api } from '../../api';
 import { signIn, useUser } from '../../auth';
 import { TRADE_CATEGORIES } from '../items/itemCategories';
-import { BASE_FILTERS, QUALITIES, categoryOptions, loadTradeItems, type BaseFilter } from './tradeItems';
+import { BASE_FILTERS, QUALITIES, categoryOptions, loadTradeItems, runewordBaseOptions, type BaseFilter } from './tradeItems';
 
 interface Trade {
   id: number;
@@ -56,16 +56,24 @@ const actionStyle: React.CSSProperties = {
 export default function TradeList() {
   const [category, setCategory] = useState('');
   const [itemRef, setItemRef] = useState('');
-  const params = {
-    ...(category && { category }),
-    ...(itemRef && { item_ref: itemRef }),
-  };
+  const [pickedBase, setPickedBase] = useState('');
 
   const { data: tradeItems = [] } = useQuery({
     queryKey: ['trade-items'],
     queryFn: loadTradeItems,
     staleTime: Infinity,
   });
+  const runewordBases = useMemo(
+    () => runewordBaseOptions(tradeItems, tradeItems.find((t) => t.ref === itemRef && t.kind === 'runeword')),
+    [tradeItems, itemRef],
+  );
+  // a base picked for another runeword only counts while it still fits the picked one
+  const baseRef = runewordBases.some((t) => t.ref === pickedBase) ? pickedBase : '';
+  const params = {
+    ...(category && { category }),
+    ...(itemRef && { item_ref: itemRef }),
+    ...(baseRef && { base_ref: baseRef }),
+  };
   const [baseFilter, setBaseFilter] = useState<BaseFilter>('');
   const { options: categoryItems, hasBoth } = useMemo(
     () => categoryOptions(tradeItems, category, baseFilter),
@@ -81,7 +89,7 @@ export default function TradeList() {
 
   const { data: trades = [], isLoading } = useQuery<Trade[]>({
     // uid in the key refetches on sign-in/out, since contacts and "mine" depend on it
-    queryKey: ['trades', category, itemRef, user?.uid ?? null],
+    queryKey: ['trades', category, itemRef, baseRef, user?.uid ?? null],
     queryFn: () => api.getTrades(params),
     enabled: user !== undefined,
   });
@@ -198,6 +206,21 @@ export default function TradeList() {
               </option>
             ))}
           </select>
+          {runewordBases.length > 0 && (
+            <select
+              value={baseRef}
+              onChange={(e) => setPickedBase(e.target.value)}
+              aria-label="依底材篩選"
+              style={{ ...selectStyle, maxWidth: '100%' }}
+            >
+              <option value="">全部底材</option>
+              {runewordBases.map((t) => (
+                <option key={t.ref} value={t.ref}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
       )}
 

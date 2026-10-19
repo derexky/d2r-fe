@@ -9,7 +9,7 @@ import { signIn, useUser } from '../../auth';
 import { TRADE_CATEGORIES } from '../items/itemCategories';
 import BackButton from '../../components/ui/BackButton';
 import { findTextLines, inkMask, makeLineCorrector, matchLine, mergeDigits, padLines } from './ocrText';
-import { BASE_FILTERS, QUALITIES, categoryOptions, fitsRuneword, itemLabel, loadTradeItems, type BaseFilter, type TradeItem } from './tradeItems';
+import { BASE_FILTERS, QUALITIES, categoryOptions, fitsRuneword, loadTradeItems, runewordBaseOptions, type BaseFilter, type TradeItem } from './tradeItems';
 
 const CATEGORIES = [{ label: '請選擇', value: '' }, ...TRADE_CATEGORIES];
 
@@ -206,16 +206,7 @@ export default function TradeNew() {
 
   const isBase = tradeItems.some((t) => t.ref === form.item_ref && t.kind === 'base');
   const runeword = tradeItems.find((t) => t.ref === form.item_ref && t.kind === 'runeword');
-  const runewordBases = useMemo(
-    () =>
-      runeword
-        ? tradeItems
-            .filter((t) => fitsRuneword(t, runeword))
-            .map((t) => ({ ref: t.ref, label: itemLabel(t) }))
-            .sort((a, b) => a.label.localeCompare(b.label, 'zh-Hant'))
-        : [],
-    [tradeItems, runeword],
-  );
+  const runewordBases = useMemo(() => runewordBaseOptions(tradeItems, runeword), [tradeItems, runeword]);
 
   const pickItem = (ref: string) => {
     const hit = categoryItems.find((t) => t.ref === ref);
