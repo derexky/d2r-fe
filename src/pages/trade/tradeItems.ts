@@ -51,7 +51,7 @@ export type BaseFilter = '' | 'named' | 'base';
 export const BASE_FILTERS: { label: string; value: BaseFilter }[] = [
   { label: '全部', value: '' },
   { label: '暗金／套裝', value: 'named' },
-  { label: '底材', value: 'base' },
+  { label: '藍黃橘裝／底材', value: 'base' },
 ];
 
 // Dropdown options for one category, sorted by label; hasBoth says whether the base filter is worth showing
