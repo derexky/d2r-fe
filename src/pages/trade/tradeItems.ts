@@ -6,6 +6,7 @@ export interface TradeItem {
   kind: 'item' | 'set' | 'runeword' | 'rune' | 'base' | 'misc';
   category: string | null;
   slot?: string;
+  sockets?: number;
 }
 
 const SLOT_LABEL: Record<string, string> = { weapon: '武器', armor: '盔甲', shield: '盾牌', helm: '頭盔' };
@@ -39,6 +40,10 @@ export function itemLabel(t: TradeItem): string {
             : category;
   return `${t.name}（${kind}）`;
 }
+
+// A base can take a runeword when it goes in the same slot and has enough sockets
+export const fitsRuneword = (base: TradeItem, runeword: TradeItem) =>
+  base.kind === 'base' && base.slot === runeword.slot && (base.sockets ?? 0) >= (runeword.sockets ?? 0);
 
 // Item quality, only recorded for bases; colours follow the in-game item names
 export const QUALITIES = [

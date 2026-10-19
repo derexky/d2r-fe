@@ -9,7 +9,7 @@ import { signIn, useUser } from '../../auth';
 import { TRADE_CATEGORIES } from '../items/itemCategories';
 import BackButton from '../../components/ui/BackButton';
 import { findTextLines, inkMask, makeLineCorrector, matchLine, mergeDigits, padLines } from './ocrText';
-import { BASE_FILTERS, QUALITIES, categoryOptions, loadTradeItems, type BaseFilter, type TradeItem } from './tradeItems';
+import { BASE_FILTERS, QUALITIES, categoryOptions, fitsRuneword, itemLabel, loadTradeItems, type BaseFilter, type TradeItem } from './tradeItems';
 
 const CATEGORIES = [{ label: '請選擇', value: '' }, ...TRADE_CATEGORIES];
 
@@ -21,6 +21,7 @@ interface FormState {
   category: string;
   item_ref: string;
   quality: string;
+  base_ref: string;
 }
 
 const inputStyle: React.CSSProperties = {
@@ -169,6 +170,7 @@ export default function TradeNew() {
     category: '',
     item_ref: '',
     quality: 'normal',
+    base_ref: '',
   });
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
@@ -203,10 +205,21 @@ export default function TradeNew() {
   };
 
   const isBase = tradeItems.some((t) => t.ref === form.item_ref && t.kind === 'base');
+  const runeword = tradeItems.find((t) => t.ref === form.item_ref && t.kind === 'runeword');
+  const runewordBases = useMemo(
+    () =>
+      runeword
+        ? tradeItems
+            .filter((t) => fitsRuneword(t, runeword))
+            .map((t) => ({ ref: t.ref, label: itemLabel(t) }))
+            .sort((a, b) => a.label.localeCompare(b.label, 'zh-Hant'))
+        : [],
+    [tradeItems, runeword],
+  );
 
   const pickItem = (ref: string) => {
     const hit = categoryItems.find((t) => t.ref === ref);
-    setForm((f) => ({ ...f, item_ref: ref, item_name: hit ? hit.name : f.item_name }));
+    setForm((f) => ({ ...f, item_ref: ref, base_ref: '', item_name: hit ? hit.name : f.item_name }));
   };
 
   const latestFile = useRef<File | null>(null);
@@ -250,11 +263,15 @@ export default function TradeNew() {
       const correct = makeLineCorrector(terms);
       const base = matchLine(rest.slice(0, 1), [...MISC_BASES, ...baseItemNames])?.name ?? (rest[0] && correct(rest[0]));
 
+      // a runeword's second line is its base
+      const baseHit = hit?.kind === 'runeword' && catalog.find((t) => t.name === base && fitsRuneword(t, hit));
+
       setBaseFilter('');
       setForm((f) => ({
         ...f,
         item_name: hit ? hit.name : (lines[0] ?? ''),
         item_ref: hit?.ref ?? '',
+        base_ref: baseHit ? baseHit.ref : '',
         category: hit?.category ?? f.category,
         item_stats_raw: [base, ...rest.slice(1).map(correct)].filter(Boolean).join('\n'),
       }));
@@ -309,6 +326,7 @@ export default function TradeNew() {
         category: form.category || undefined,
         item_ref: form.item_ref || undefined,
         quality: isBase ? form.quality : undefined,
+        base_ref: (runeword && form.base_ref) || undefined,
       });
       navigate('/trade');
     } catch (err) {
@@ -464,6 +482,21 @@ export default function TradeNew() {
                     </label>
                   ))}
                 </div>
+              )}
+              {runeword && (
+                <select
+                  style={{ ...inputStyle, marginTop: '4px' }}
+                  value={form.base_ref}
+                  onChange={handleField('base_ref')}
+                  aria-label="底材"
+                >
+                  <option value="">底材（未指定）</option>
+                  {runewordBases.map((t) => (
+                    <option key={t.ref} value={t.ref}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
               )}
             </div>
           )}

@@ -17,6 +17,7 @@ interface Trade {
   category: string | null;
   item_ref: string | null;
   quality: string | null;
+  base_ref: string | null;
   created_at: string;
   mine: boolean;
 }
@@ -70,6 +71,11 @@ export default function TradeList() {
     () => categoryOptions(tradeItems, category, baseFilter),
     [tradeItems, category, baseFilter],
   );
+  // runeword trades show their base after the name
+  const nameOf = (t: Trade) => {
+    const base = t.base_ref && tradeItems.find((i) => i.ref === t.base_ref);
+    return base ? `${t.item_name}（${base.name}）` : t.item_name;
+  };
   const user = useUser();
   const queryClient = useQueryClient();
 
@@ -220,7 +226,7 @@ export default function TradeList() {
               }}
             >
               <span style={{ ...ellipsis, color: nameColor(trade), fontWeight: 'bold', width: '140px', flexShrink: 0, fontSize: '13px' }}>
-                {trade.item_name}
+                {nameOf(trade)}
               </span>
               <span style={{ ...ellipsis, flex: 1, color: '#6060ff', fontSize: '11px' }}>
                 {trade.item_stats_raw?.replace(/\n/g, ' / ')}
@@ -264,10 +270,10 @@ export default function TradeList() {
                   title="只看這個物品的掛單"
                   style={{ color: nameColor(selected), fontWeight: 'bold', fontSize: '14px', background: 'none', border: 'none', padding: 0, textAlign: 'left', textDecoration: 'underline', cursor: 'pointer' }}
                 >
-                  {selected.item_name}
+                  {nameOf(selected)}
                 </button>
               ) : (
-                <span style={{ color: nameColor(selected), fontWeight: 'bold', fontSize: '14px' }}>{selected.item_name}</span>
+                <span style={{ color: nameColor(selected), fontWeight: 'bold', fontSize: '14px' }}>{nameOf(selected)}</span>
               )}
               <span style={{ color: '#ff8c00', fontSize: '13px', flexShrink: 0 }}>{selected.price}</span>
             </div>
