@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { ITEM_TABS } from '../../pages/items/itemTabs';
+import AuthButton from './AuthButton';
 
 interface NavItem {
   label: string;
@@ -113,6 +114,7 @@ function NavNode({ item, depth = 0 }: { item: NavItem; depth?: number }) {
 export default function NavTree() {
   return (
     <nav className="py-2">
+      <AuthButton />
       {NAV.map((item) => (
         <NavNode key={item.label} item={item} />
       ))}
