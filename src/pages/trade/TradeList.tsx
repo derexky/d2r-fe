@@ -6,7 +6,7 @@ import { isAxiosError } from 'axios';
 import { api } from '../../api';
 import { signIn, useUser } from '../../auth';
 import { TRADE_CATEGORIES } from '../items/itemCategories';
-import { BASE_FILTERS, categoryOptions, loadTradeItems, type BaseFilter } from './tradeItems';
+import { BASE_FILTERS, QUALITIES, categoryOptions, loadTradeItems, type BaseFilter } from './tradeItems';
 
 interface Trade {
   id: number;
@@ -16,6 +16,7 @@ interface Trade {
   contact?: string; // only sent to signed-in users
   category: string | null;
   item_ref: string | null;
+  quality: string | null;
   created_at: string;
   mine: boolean;
 }
@@ -27,6 +28,9 @@ const ellipsis: React.CSSProperties = {
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
 };
+
+// in-game name colour for magic / rare / crafted bases, the trade list's olive otherwise
+const nameColor = (t: Trade) => QUALITIES.find((q) => q.value === t.quality)?.color ?? '#808000';
 
 const selectStyle: React.CSSProperties = {
   background: '#191714',
@@ -215,7 +219,7 @@ export default function TradeList() {
                 cursor: 'pointer',
               }}
             >
-              <span style={{ ...ellipsis, color: '#808000', fontWeight: 'bold', width: '140px', flexShrink: 0, fontSize: '13px' }}>
+              <span style={{ ...ellipsis, color: nameColor(trade), fontWeight: 'bold', width: '140px', flexShrink: 0, fontSize: '13px' }}>
                 {trade.item_name}
               </span>
               <span style={{ ...ellipsis, flex: 1, color: '#6060ff', fontSize: '11px' }}>
@@ -258,12 +262,12 @@ export default function TradeList() {
                     setSelectedId(null);
                   }}
                   title="只看這個物品的掛單"
-                  style={{ color: '#808000', fontWeight: 'bold', fontSize: '14px', background: 'none', border: 'none', padding: 0, textAlign: 'left', textDecoration: 'underline', cursor: 'pointer' }}
+                  style={{ color: nameColor(selected), fontWeight: 'bold', fontSize: '14px', background: 'none', border: 'none', padding: 0, textAlign: 'left', textDecoration: 'underline', cursor: 'pointer' }}
                 >
                   {selected.item_name}
                 </button>
               ) : (
-                <span style={{ color: '#808000', fontWeight: 'bold', fontSize: '14px' }}>{selected.item_name}</span>
+                <span style={{ color: nameColor(selected), fontWeight: 'bold', fontSize: '14px' }}>{selected.item_name}</span>
               )}
               <span style={{ color: '#ff8c00', fontSize: '13px', flexShrink: 0 }}>{selected.price}</span>
             </div>

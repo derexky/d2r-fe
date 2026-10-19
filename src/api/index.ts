@@ -60,6 +60,7 @@ export const api = {
     contact: string;
     category?: string;
     item_ref?: string;
+    quality?: string;
   }) => client.post('/trades', body).then((r) => r.data.data),
   deleteTrade: (id: number) =>
     client.delete(`/trades/${id}`).then((r) => r.data.data),

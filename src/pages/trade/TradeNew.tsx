@@ -9,7 +9,7 @@ import { signIn, useUser } from '../../auth';
 import { TRADE_CATEGORIES } from '../items/itemCategories';
 import BackButton from '../../components/ui/BackButton';
 import { findTextLines, inkMask, makeLineCorrector, matchLine, mergeDigits, padLines } from './ocrText';
-import { BASE_FILTERS, categoryOptions, loadTradeItems, type BaseFilter, type TradeItem } from './tradeItems';
+import { BASE_FILTERS, QUALITIES, categoryOptions, loadTradeItems, type BaseFilter, type TradeItem } from './tradeItems';
 
 const CATEGORIES = [{ label: '請選擇', value: '' }, ...TRADE_CATEGORIES];
 
@@ -20,6 +20,7 @@ interface FormState {
   contact: string;
   category: string;
   item_ref: string;
+  quality: string;
 }
 
 const inputStyle: React.CSSProperties = {
@@ -167,6 +168,7 @@ export default function TradeNew() {
     contact: '',
     category: '',
     item_ref: '',
+    quality: 'normal',
   });
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
@@ -199,6 +201,8 @@ export default function TradeNew() {
       return visible ? f : { ...f, item_ref: '' };
     });
   };
+
+  const isBase = tradeItems.some((t) => t.ref === form.item_ref && t.kind === 'base');
 
   const pickItem = (ref: string) => {
     const hit = categoryItems.find((t) => t.ref === ref);
@@ -304,6 +308,7 @@ export default function TradeNew() {
         contact: form.contact.trim(),
         category: form.category || undefined,
         item_ref: form.item_ref || undefined,
+        quality: isBase ? form.quality : undefined,
       });
       navigate('/trade');
     } catch (err) {
@@ -443,6 +448,23 @@ export default function TradeNew() {
                   </option>
                 ))}
               </select>
+              {isBase && (
+                <div role="radiogroup" aria-label="品質" style={{ display: 'flex', gap: '12px', marginTop: '6px', fontSize: '12px' }}>
+                  {QUALITIES.map((q) => (
+                    <label key={q.value} style={{ color: q.color, cursor: 'pointer' }}>
+                      <input
+                        type="radio"
+                        name="quality"
+                        value={q.value}
+                        checked={form.quality === q.value}
+                        onChange={handleField('quality')}
+                        style={{ marginRight: '4px' }}
+                      />
+                      {q.label}
+                    </label>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

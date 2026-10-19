@@ -38,6 +38,14 @@ export function itemLabel(t: TradeItem): string {
   return `${t.name}（${kind}）`;
 }
 
+// Item quality, only recorded for bases; colours follow the in-game item names
+export const QUALITIES = [
+  { value: 'normal', label: '普通', color: '#c8c8c8' },
+  { value: 'magic', label: '魔法', color: '#6969ff' },
+  { value: 'rare', label: '稀有', color: '#ffff64' },
+  { value: 'crafted', label: '合成', color: '#ffa800' },
+];
+
 export type BaseFilter = '' | 'named' | 'base';
 
 export const BASE_FILTERS: { label: string; value: BaseFilter }[] = [
