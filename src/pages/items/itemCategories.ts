@@ -25,10 +25,13 @@ export const UNIQUE_CATEGORIES = [
   { label: '護符', value: 'charms' },
 ];
 
-// Every items.category, plus 其他 for things that aren't in the item DB (runes, gems...)
+// Every items.category plus the extra trade-item kinds, and 其他 for anything else
 export const TRADE_CATEGORIES = [
   ...UNIQUE_CATEGORIES,
   { label: '珠寶', value: 'jewels' },
   { label: '職業專屬', value: 'class_specific' },
+  { label: '符文', value: 'runes' },
+  { label: '鑰匙', value: 'keys' },
+  { label: '先祖雕像', value: 'statues' },
   { label: '其他', value: 'other' },
 ];
