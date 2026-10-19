@@ -28,7 +28,22 @@ export function matchLine(lines: string[], candidates: string[]): { name: string
   return best.score >= 0.5 ? { name: best.name, index: best.index } : null;
 }
 
-export type OcrWord = { text: string; confidence: number; bbox: { x0: number; x1: number } };
+type Box = { x0: number; x1: number };
+export type OcrWord = { text: string; confidence: number; bbox: Box; symbols?: { text: string; bbox: Box }[] };
+
+/**
+ * chi_tra reads the top ring of the tooltip font's % as a digit and then the % itself, so
+ * 5% comes out as 59%. A digit lying mostly inside a % of the same word is that ghost.
+ */
+function dropPercentGhosts(w: OcrWord): string {
+  const syms = w.symbols;
+  const pct = syms?.filter((s) => s.text === '%') ?? [];
+  if (!syms || !pct.length) return w.text;
+  const ghost = (s: { text: string; bbox: Box }) =>
+    /\d/.test(s.text) &&
+    pct.some((p) => Math.min(s.bbox.x1, p.bbox.x1) - Math.max(s.bbox.x0, p.bbox.x0) > (s.bbox.x1 - s.bbox.x0) / 2);
+  return syms.filter((s) => !ghost(s)).map((s) => s.text).join('');
+}
 
 const NUMERIC_WORD = /^[(:]?[+-]?\d+(?:-\d+)?%?[)]?$/;
 // An end word Tesseract is unsure of and that sits apart from the text is an item icon or a
@@ -54,6 +69,7 @@ export function mergeDigits(chi: OcrWord[], eng: OcrWord[]): string {
     .slice(start, end)
     .map((w) => {
       if (!/\d/.test(w.text) || /[一-鿿]/.test(w.text)) return w.text;
+      const own = dropPercentGhosts(w);
       const slack = (w.bbox.x1 - w.bbox.x0) * 0.15 + 4;
       const inside = eng.filter((e) => {
         const mid = (e.bbox.x0 + e.bbox.x1) / 2;
@@ -61,7 +77,7 @@ export function mergeDigits(chi: OcrWord[], eng: OcrWord[]): string {
       });
       const fits = inside.every((e) => e.bbox.x0 >= w.bbox.x0 - slack && e.bbox.x1 <= w.bbox.x1 + slack);
       const joined = inside.map((e) => e.text).join('');
-      return inside.length && fits && NUMERIC_WORD.test(joined) ? joined : w.text;
+      return inside.length && fits && NUMERIC_WORD.test(joined) ? joined : own;
     })
     .join(' ');
 }

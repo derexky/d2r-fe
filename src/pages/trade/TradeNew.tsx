@@ -64,6 +64,10 @@ function fixOcrText(raw: string): string {
     .split('\n').map((l) => l.trim()).filter(Boolean).join('\n');
 }
 
+// base types missing from base-item-names.json (it lists equipment only); without them the
+// fuzzy match turns 大型咒符 into 大型盾
+const MISC_BASES = ['小型咒符', '大型咒符', '特大咒符', '珠寶', '戒指', '護身符'];
+
 // mouse hints D2R prints under every tooltip (Shift + 左鍵點擊以裝備, 按住 Shift 鍵進行比較)
 const UI_HINT = /左鍵點擊|鍵進行比較/;
 
@@ -207,8 +211,7 @@ export default function TradeNew() {
       const nameHit = matchLine(lines.slice(0, 3), itemNames);
       const rest = lines.slice((nameHit?.index ?? 0) + 1);
       const correct = makeLineCorrector(terms);
-      // base-item-names has no charms or jewels; their base type is snapped via the terms
-      const base = matchLine(rest.slice(0, 1), baseItemNames)?.name ?? (rest[0] && correct(rest[0]));
+      const base = matchLine(rest.slice(0, 1), [...MISC_BASES, ...baseItemNames])?.name ?? (rest[0] && correct(rest[0]));
 
       setForm((f) => ({
         ...f,

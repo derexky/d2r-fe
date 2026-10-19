@@ -16,6 +16,7 @@ assert.equal(correct('攻擊時有 10% 機會施展等紋 3 冰封求'), '攻擊
 
 assert.deepEqual(matchLine(['技能', '死亡之剷', 'x'], ['死亡之鏟', '牙齒']), { name: '死亡之鏟', index: 1 });
 assert.equal(matchLine(['完全無關'], ['死亡之鏟']), null);
+assert.equal(matchLine(['大型咒符'], ['大型咒符', '大型盾'])?.name, '大型咒符'); // exact beats the 0.5 near miss
 
 const word = (text: string, x0: number, x1: number, confidence = 90) => ({ text, confidence, bbox: { x0, x1 } });
 assert.equal(
@@ -34,6 +35,18 @@ assert.equal( // one chi number read as several eng words is joined
 assert.equal( // eng number reaching into the next glyph (44 點 → 44%) is not used
   mergeDigits([word('24-44', 50, 120), word('點', 130, 160)], [word('24-44%', 50, 160)]),
   '24-44 點',
+);
+const sym = (text: string, x0: number, x1: number) => ({ text, bbox: { x0, x1 } });
+assert.equal( // the % ring read as a digit (5% → 59%) is dropped when eng has no number to offer
+  mergeDigits(
+    [word('有', 146, 172), { ...word('59%', 187, 243), symbols: [sym('5', 187, 206), sym('9', 208, 221), sym('%', 210, 243)] }],
+    [word('%', 187, 243, 0)],
+  ),
+  '有 5%',
+);
+assert.equal( // a real digit before % is kept
+  mergeDigits([{ ...word('59%', 0, 60), symbols: [sym('5', 0, 18), sym('9', 20, 38), sym('%', 40, 60)] }], []),
+  '59%',
 );
 assert.equal( // low-confidence junk set apart at the line ends is dropped
   mergeDigits([word('|', 0, 2, 10), word('+1', 60, 80), word('所有技能', 90, 170), word('ww', 300, 320, 19)], []),
