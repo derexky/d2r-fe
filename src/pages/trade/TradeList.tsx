@@ -62,10 +62,16 @@ export default function TradeList() {
     enabled: user !== undefined,
   });
 
-  const copyContact = (contact: string) => {
-    navigator.clipboard.writeText(contact).catch(() => {
-      window.prompt('複製聯絡方式：', contact);
-    });
+  const [copiedId, setCopiedId] = useState<number | null>(null);
+
+  const copyContact = (trade: Trade) => {
+    navigator.clipboard.writeText(trade.contact!).then(
+      () => {
+        setCopiedId(trade.id);
+        setTimeout(() => setCopiedId((id) => (id === trade.id ? null : id)), 1500);
+      },
+      () => window.prompt('複製聯絡方式：', trade.contact),
+    );
   };
 
   const takeDown = async (trade: Trade) => {
@@ -179,11 +185,11 @@ export default function TradeList() {
               </div>
               {trade.contact ? (
                 <button
-                  onClick={() => copyContact(trade.contact!)}
+                  onClick={() => copyContact(trade)}
                   title={trade.contact}
                   style={actionStyle}
                 >
-                  聯繫
+                  {copiedId === trade.id ? '已複製' : '聯繫'}
                 </button>
               ) : (
                 <button onClick={signIn} style={actionStyle}>
