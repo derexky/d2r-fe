@@ -2,7 +2,9 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { createWorker, PSM, OEM, type Page, type Worker } from 'tesseract.js';
 import { useNavigate } from 'react-router-dom';
+import { isAxiosError } from 'axios';
 import { api } from '../../api';
+import { signIn, useUser } from '../../auth';
 import BackButton from '../../components/ui/BackButton';
 import { findTextLines, inkMask, makeLineCorrector, matchLine, mergeDigits, padLines } from './ocrText';
 
@@ -163,6 +165,7 @@ async function preprocessForOCR(file: File) {
 
 export default function TradeNew() {
   const navigate = useNavigate();
+  const user = useUser();
   const [ocrProgress, setOcrProgress] = useState<number | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [ocrRaw, setOcrRaw] = useState('');
@@ -269,10 +272,25 @@ export default function TradeNew() {
         category: form.category || undefined,
       });
       navigate('/trade');
+    } catch (err) {
+      window.alert(isAxiosError(err) && err.response?.status === 401 ? '請重新登入' : '發布失敗');
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (user === undefined) return null;
+  if (user === null) {
+    return (
+      <div>
+        <BackButton fallback="/trade" />
+        <p className="mb-3 text-[13px] text-[#aaa398]">發布掛單需要先登入。</p>
+        <button onClick={signIn} className="text-[13px] hover:text-white">
+          Google 登入
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div>
