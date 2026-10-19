@@ -37,3 +37,22 @@ export function itemLabel(t: TradeItem): string {
           : category;
   return `${t.name}（${kind}）`;
 }
+
+export type BaseFilter = '' | 'named' | 'base';
+
+export const BASE_FILTERS: { label: string; value: BaseFilter }[] = [
+  { label: '全部', value: '' },
+  { label: '暗金／套裝', value: 'named' },
+  { label: '底材', value: 'base' },
+];
+
+// Dropdown options for one category, sorted by label; hasBoth says whether the base filter is worth showing
+export function categoryOptions(items: TradeItem[], category: string, baseFilter: BaseFilter) {
+  const inCategory = items.filter((t) => t.category === category);
+  const hasBoth = inCategory.some((t) => t.kind === 'base') && inCategory.some((t) => t.kind !== 'base');
+  const options = inCategory
+    .filter((t) => !baseFilter || (t.kind === 'base') === (baseFilter === 'base'))
+    .map((t) => ({ ref: t.ref, name: t.name, label: itemLabel(t) }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'zh-Hant'));
+  return { options, hasBoth };
+}

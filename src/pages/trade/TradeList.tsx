@@ -6,7 +6,7 @@ import { isAxiosError } from 'axios';
 import { api } from '../../api';
 import { signIn, useUser } from '../../auth';
 import { TRADE_CATEGORIES } from '../items/itemCategories';
-import { itemLabel, loadTradeItems } from './tradeItems';
+import { BASE_FILTERS, categoryOptions, loadTradeItems, type BaseFilter } from './tradeItems';
 
 interface Trade {
   id: number;
@@ -26,6 +26,15 @@ const ellipsis: React.CSSProperties = {
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
+};
+
+const selectStyle: React.CSSProperties = {
+  background: '#191714',
+  border: '1px solid #302c26',
+  color: '#aaa',
+  padding: '4px 8px',
+  borderRadius: '2px',
+  fontSize: '12px',
 };
 
 const actionStyle: React.CSSProperties = {
@@ -52,13 +61,10 @@ export default function TradeList() {
     queryFn: loadTradeItems,
     staleTime: Infinity,
   });
-  const categoryItems = useMemo(
-    () =>
-      tradeItems
-        .filter((t) => t.category === category)
-        .map((t) => ({ ref: t.ref, label: itemLabel(t) }))
-        .sort((a, b) => a.label.localeCompare(b.label, 'zh-Hant')),
-    [tradeItems, category],
+  const [baseFilter, setBaseFilter] = useState<BaseFilter>('');
+  const { options: categoryItems, hasBoth } = useMemo(
+    () => categoryOptions(tradeItems, category, baseFilter),
+    [tradeItems, category, baseFilter],
   );
   const user = useUser();
   const queryClient = useQueryClient();
@@ -133,6 +139,7 @@ export default function TradeList() {
             onClick={() => {
               setCategory(c.value);
               setItemRef('');
+              setBaseFilter('');
             }}
             style={{
               background: category === c.value ? '#1a1400' : 'transparent',
@@ -150,28 +157,38 @@ export default function TradeList() {
       </div>
 
       {categoryItems.length > 0 && (
-        <select
-          value={itemRef}
-          onChange={(e) => setItemRef(e.target.value)}
-          aria-label="依物品篩選"
-          style={{
-            background: '#191714',
-            border: '1px solid #302c26',
-            color: '#aaa',
-            padding: '4px 8px',
-            borderRadius: '2px',
-            fontSize: '12px',
-            marginBottom: '12px',
-            maxWidth: '100%',
-          }}
-        >
-          <option value="">全部物品</option>
-          {categoryItems.map((t) => (
-            <option key={t.ref} value={t.ref}>
-              {t.label}
-            </option>
-          ))}
-        </select>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '12px' }}>
+          {hasBoth && (
+            <select
+              value={baseFilter}
+              onChange={(e) => {
+                setBaseFilter(e.target.value as BaseFilter);
+                setItemRef('');
+              }}
+              aria-label="依是否為底材篩選"
+              style={selectStyle}
+            >
+              {BASE_FILTERS.map((b) => (
+                <option key={b.value} value={b.value}>
+                  {b.label}
+                </option>
+              ))}
+            </select>
+          )}
+          <select
+            value={itemRef}
+            onChange={(e) => setItemRef(e.target.value)}
+            aria-label="依物品篩選"
+            style={{ ...selectStyle, maxWidth: '100%' }}
+          >
+            <option value="">全部物品</option>
+            {categoryItems.map((t) => (
+              <option key={t.ref} value={t.ref}>
+                {t.label}
+              </option>
+            ))}
+          </select>
+        </div>
       )}
 
       {isLoading || user === undefined ? (
@@ -236,6 +253,7 @@ export default function TradeList() {
                 <button
                   onClick={() => {
                     setCategory(selected.category ?? '');
+                    setBaseFilter('');
                     setItemRef(selected.item_ref!);
                     setSelectedId(null);
                   }}

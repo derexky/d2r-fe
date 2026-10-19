@@ -9,7 +9,7 @@ import { signIn, useUser } from '../../auth';
 import { TRADE_CATEGORIES } from '../items/itemCategories';
 import BackButton from '../../components/ui/BackButton';
 import { findTextLines, inkMask, makeLineCorrector, matchLine, mergeDigits, padLines } from './ocrText';
-import { itemLabel, loadTradeItems, type TradeItem } from './tradeItems';
+import { BASE_FILTERS, categoryOptions, loadTradeItems, type BaseFilter, type TradeItem } from './tradeItems';
 
 const CATEGORIES = [{ label: '請選擇', value: '' }, ...TRADE_CATEGORIES];
 
@@ -176,20 +176,29 @@ export default function TradeNew() {
     queryFn: loadTradeItems,
     staleTime: Infinity,
   });
-  const categoryItems = useMemo(
-    () =>
-      tradeItems
-        .filter((t) => t.category === form.category)
-        .map((t) => ({ ref: t.ref, name: t.name, label: itemLabel(t) }))
-        .sort((a, b) => a.label.localeCompare(b.label, 'zh-Hant')),
-    [tradeItems, form.category],
+  const [baseFilter, setBaseFilter] = useState<BaseFilter>('');
+  const { options: categoryItems, hasBoth } = useMemo(
+    () => categoryOptions(tradeItems, form.category, baseFilter),
+    [tradeItems, form.category, baseFilter],
   );
 
-  const pickCategory = (category: string) =>
+  const pickCategory = (category: string) => {
+    setBaseFilter('');
     setForm((f) => {
       const keep = tradeItems.some((t) => t.ref === f.item_ref && t.category === category);
       return { ...f, category, item_ref: keep ? f.item_ref : '' };
     });
+  };
+
+  const pickBaseFilter = (filter: BaseFilter) => {
+    setBaseFilter(filter);
+    // drop a picked item the new filter hides
+    setForm((f) => {
+      const t = tradeItems.find((i) => i.ref === f.item_ref);
+      const visible = !filter || !t || (t.kind === 'base') === (filter === 'base');
+      return visible ? f : { ...f, item_ref: '' };
+    });
+  };
 
   const pickItem = (ref: string) => {
     const hit = categoryItems.find((t) => t.ref === ref);
@@ -237,6 +246,7 @@ export default function TradeNew() {
       const correct = makeLineCorrector(terms);
       const base = matchLine(rest.slice(0, 1), [...MISC_BASES, ...baseItemNames])?.name ?? (rest[0] && correct(rest[0]));
 
+      setBaseFilter('');
       setForm((f) => ({
         ...f,
         item_name: hit ? hit.name : (lines[0] ?? ''),
@@ -411,6 +421,20 @@ export default function TradeNew() {
           {categoryItems.length > 0 && (
             <div>
               <label style={labelStyle}>物品</label>
+              {hasBoth && (
+                <select
+                  style={{ ...inputStyle, marginBottom: '4px' }}
+                  value={baseFilter}
+                  onChange={(e) => pickBaseFilter(e.target.value as BaseFilter)}
+                  aria-label="依是否為底材篩選"
+                >
+                  {BASE_FILTERS.map((b) => (
+                    <option key={b.value} value={b.value}>
+                      {b.label}
+                    </option>
+                  ))}
+                </select>
+              )}
               <select style={inputStyle} value={form.item_ref} onChange={(e) => pickItem(e.target.value)}>
                 <option value="">不在清單中（手動輸入名稱）</option>
                 {categoryItems.map((t) => (
