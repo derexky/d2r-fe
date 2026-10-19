@@ -176,18 +176,24 @@ export default function TradeNew() {
     queryFn: loadTradeItems,
     staleTime: Infinity,
   });
-  const byLabel = useMemo(() => new Map(tradeItems.map((t) => [itemLabel(t), t])), [tradeItems]);
-  // what the name box shows: an option label once an item is picked, otherwise free text
-  const [itemText, setItemText] = useState('');
+  const categoryItems = useMemo(
+    () =>
+      tradeItems
+        .filter((t) => t.category === form.category)
+        .map((t) => ({ ref: t.ref, name: t.name, label: itemLabel(t) }))
+        .sort((a, b) => a.label.localeCompare(b.label, 'zh-Hant')),
+    [tradeItems, form.category],
+  );
 
-  const pickItem = (text: string, hit?: TradeItem) => {
-    setItemText(text);
-    setForm((f) => ({
-      ...f,
-      item_name: hit ? hit.name : text,
-      item_ref: hit?.ref ?? '',
-      category: hit?.category ?? f.category,
-    }));
+  const pickCategory = (category: string) =>
+    setForm((f) => {
+      const keep = tradeItems.some((t) => t.ref === f.item_ref && t.category === category);
+      return { ...f, category, item_ref: keep ? f.item_ref : '' };
+    });
+
+  const pickItem = (ref: string) => {
+    const hit = categoryItems.find((t) => t.ref === ref);
+    setForm((f) => ({ ...f, item_ref: ref, item_name: hit ? hit.name : f.item_name }));
   };
 
   const latestFile = useRef<File | null>(null);
@@ -231,7 +237,6 @@ export default function TradeNew() {
       const correct = makeLineCorrector(terms);
       const base = matchLine(rest.slice(0, 1), [...MISC_BASES, ...baseItemNames])?.name ?? (rest[0] && correct(rest[0]));
 
-      setItemText(hit ? itemLabel(hit) : (lines[0] ?? ''));
       setForm((f) => ({
         ...f,
         item_name: hit ? hit.name : (lines[0] ?? ''),
@@ -393,22 +398,38 @@ export default function TradeNew() {
           style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}
         >
           <div>
+            <label style={labelStyle}>物品類別</label>
+            <select style={inputStyle} value={form.category} onChange={(e) => pickCategory(e.target.value)}>
+              {CATEGORIES.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {categoryItems.length > 0 && (
+            <div>
+              <label style={labelStyle}>物品</label>
+              <select style={inputStyle} value={form.item_ref} onChange={(e) => pickItem(e.target.value)}>
+                <option value="">不在清單中（手動輸入名稱）</option>
+                {categoryItems.map((t) => (
+                  <option key={t.ref} value={t.ref}>
+                    {t.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div>
             <label style={labelStyle}>物品名稱 *</label>
             <input
               style={{ ...inputStyle, color: '#808000' }}
-              list="trade-item-options"
-              value={itemText}
-              onChange={(e) => pickItem(e.target.value, byLabel.get(e.target.value))}
-              placeholder="輸入名稱搜尋"
+              value={form.item_name}
+              // a typed name no longer matches the picked item
+              onChange={(e) => setForm((f) => ({ ...f, item_name: e.target.value, item_ref: '' }))}
             />
-            <datalist id="trade-item-options">
-              {[...byLabel.keys()].map((label) => (
-                <option key={label} value={label} />
-              ))}
-            </datalist>
-            <div style={{ color: form.item_ref ? '#5a8a5a' : '#666', fontSize: '10px', marginTop: '2px' }}>
-              {form.item_ref ? `已對應：${itemText}` : '未對應物品，可直接輸入名稱'}
-            </div>
             {errors.item_name && (
               <div style={{ color: '#ff4444', fontSize: '10px', marginTop: '2px' }}>
                 {errors.item_name}
@@ -423,17 +444,6 @@ export default function TradeNew() {
               value={form.item_stats_raw}
               onChange={handleField('item_stats_raw')}
             />
-          </div>
-
-          <div>
-            <label style={labelStyle}>物品類別</label>
-            <select style={inputStyle} value={form.category} onChange={handleField('category')}>
-              {CATEGORIES.map((c) => (
-                <option key={c.value} value={c.value}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
           </div>
 
           <div>

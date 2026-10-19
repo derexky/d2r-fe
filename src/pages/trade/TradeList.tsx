@@ -1,11 +1,12 @@
 // d2r-fe/src/pages/trade/TradeList.tsx
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { api } from '../../api';
 import { signIn, useUser } from '../../auth';
 import { TRADE_CATEGORIES } from '../items/itemCategories';
+import { itemLabel, loadTradeItems } from './tradeItems';
 
 interface Trade {
   id: number;
@@ -40,17 +41,31 @@ const actionStyle: React.CSSProperties = {
 
 export default function TradeList() {
   const [category, setCategory] = useState('');
-  const [itemFilter, setItemFilter] = useState<{ ref: string; name: string } | null>(null);
+  const [itemRef, setItemRef] = useState('');
   const params = {
     ...(category && { category }),
-    ...(itemFilter && { item_ref: itemFilter.ref }),
+    ...(itemRef && { item_ref: itemRef }),
   };
+
+  const { data: tradeItems = [] } = useQuery({
+    queryKey: ['trade-items'],
+    queryFn: loadTradeItems,
+    staleTime: Infinity,
+  });
+  const categoryItems = useMemo(
+    () =>
+      tradeItems
+        .filter((t) => t.category === category)
+        .map((t) => ({ ref: t.ref, label: itemLabel(t) }))
+        .sort((a, b) => a.label.localeCompare(b.label, 'zh-Hant')),
+    [tradeItems, category],
+  );
   const user = useUser();
   const queryClient = useQueryClient();
 
   const { data: trades = [], isLoading } = useQuery<Trade[]>({
     // uid in the key refetches on sign-in/out, since contacts and "mine" depend on it
-    queryKey: ['trades', category, itemFilter?.ref ?? null, user?.uid ?? null],
+    queryKey: ['trades', category, itemRef, user?.uid ?? null],
     queryFn: () => api.getTrades(params),
     enabled: user !== undefined,
   });
@@ -115,7 +130,10 @@ export default function TradeList() {
         {FILTER_CHIPS.map((c) => (
           <button
             key={c.value}
-            onClick={() => setCategory(c.value)}
+            onClick={() => {
+              setCategory(c.value);
+              setItemRef('');
+            }}
             style={{
               background: category === c.value ? '#1a1400' : 'transparent',
               border: `1px solid ${category === c.value ? '#808000' : '#302c26'}`,
@@ -131,13 +149,29 @@ export default function TradeList() {
         ))}
       </div>
 
-      {itemFilter && (
-        <div style={{ marginBottom: '12px', fontSize: '12px', color: '#aaa' }}>
-          物品：{itemFilter.name}{' '}
-          <button onClick={() => setItemFilter(null)} style={actionStyle} aria-label="取消物品篩選">
-            ✕
-          </button>
-        </div>
+      {categoryItems.length > 0 && (
+        <select
+          value={itemRef}
+          onChange={(e) => setItemRef(e.target.value)}
+          aria-label="依物品篩選"
+          style={{
+            background: '#191714',
+            border: '1px solid #302c26',
+            color: '#aaa',
+            padding: '4px 8px',
+            borderRadius: '2px',
+            fontSize: '12px',
+            marginBottom: '12px',
+            maxWidth: '100%',
+          }}
+        >
+          <option value="">全部物品</option>
+          {categoryItems.map((t) => (
+            <option key={t.ref} value={t.ref}>
+              {t.label}
+            </option>
+          ))}
+        </select>
       )}
 
       {isLoading || user === undefined ? (
@@ -201,7 +235,8 @@ export default function TradeList() {
               {selected.item_ref ? (
                 <button
                   onClick={() => {
-                    setItemFilter({ ref: selected.item_ref!, name: selected.item_name });
+                    setCategory(selected.category ?? '');
+                    setItemRef(selected.item_ref!);
                     setSelectedId(null);
                   }}
                   title="只看這個物品的掛單"
