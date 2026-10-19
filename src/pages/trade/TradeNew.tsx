@@ -5,23 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { api } from '../../api';
 import { signIn, useUser } from '../../auth';
+import { TRADE_CATEGORIES } from '../items/itemCategories';
 import BackButton from '../../components/ui/BackButton';
 import { findTextLines, inkMask, makeLineCorrector, matchLine, mergeDigits, padLines } from './ocrText';
 
-const CATEGORIES = [
-  { label: '請選擇', value: '' },
-  { label: '戒指', value: 'rings' },
-  { label: '護身符', value: 'amulets' },
-  { label: '護符', value: 'charms' },
-  { label: '頭部', value: 'helms' },
-  { label: '盔甲', value: 'armors' },
-  { label: '武器', value: 'weapons' },
-  { label: '盾牌', value: 'shields' },
-  { label: '手套', value: 'gloves' },
-  { label: '腰帶', value: 'belts' },
-  { label: '靴類', value: 'boots' },
-  { label: '其他', value: 'other' },
-];
+const CATEGORIES = [{ label: '請選擇', value: '' }, ...TRADE_CATEGORIES];
 
 interface FormState {
   item_name: string;

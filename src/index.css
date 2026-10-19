@@ -149,3 +149,9 @@ main .hero h1::before { display: none; }
 .mark > * { transform: rotate(-45deg); }
 .stars { color: #c7a055; letter-spacing: 2px; font-size: 12px; }
 .stars i { color: #3e3932; font-style: normal; }
+
+/* dims and blurs the page behind modal dialogs so they read as the top layer */
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+}

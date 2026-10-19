@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { api } from '../../api';
 import { signIn, useUser } from '../../auth';
+import { TRADE_CATEGORIES } from '../items/itemCategories';
 
 interface Trade {
   id: number;
@@ -17,26 +18,13 @@ interface Trade {
   mine: boolean;
 }
 
-const FILTER_CHIPS = [
-  { label: '全部', value: '' },
-  { label: '戒指', value: 'rings' },
-  { label: '護身符', value: 'amulets' },
-  { label: '護符', value: 'charms' },
-  { label: '頭部', value: 'helms' },
-  { label: '盔甲', value: 'armors' },
-  { label: '武器', value: 'weapons' },
-  { label: '盾牌', value: 'shields' },
-  { label: '手套', value: 'gloves' },
-  { label: '腰帶', value: 'belts' },
-  { label: '靴類', value: 'boots' },
-  { label: '其他', value: 'other' },
-];
+const FILTER_CHIPS = [{ label: '全部', value: '' }, ...TRADE_CATEGORIES];
 
-function truncate(text: string | null, max = 60): string {
-  if (!text) return '';
-  const single = text.replace(/\n/g, ' / ');
-  return single.length > max ? single.slice(0, max) + '…' : single;
-}
+const ellipsis: React.CSSProperties = {
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+};
 
 const actionStyle: React.CSSProperties = {
   background: '#191714',
@@ -62,6 +50,9 @@ export default function TradeList() {
     enabled: user !== undefined,
   });
 
+  // look the trade up in the latest list, so signing in from the dialog reveals the contact
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const selected = trades.find((t) => t.id === selectedId);
   const [copiedId, setCopiedId] = useState<number | null>(null);
 
   const copyContact = (trade: Trade) => {
@@ -82,6 +73,7 @@ export default function TradeList() {
       const status = isAxiosError(err) ? err.response?.status : undefined;
       window.alert(status === 401 ? '請重新登入' : status === 404 ? '掛單不存在' : '下架失敗');
     }
+    setSelectedId(null);
     queryClient.invalidateQueries({ queryKey: ['trades'] });
   };
 
@@ -141,9 +133,12 @@ export default function TradeList() {
       ) : (
         <div>
           {trades.map((trade) => (
-            <div
+            <button
               key={trade.id}
+              onClick={() => setSelectedId(trade.id)}
               style={{
+                width: '100%',
+                textAlign: 'left',
                 border: '1px solid #606000',
                 background: '#0d0d00',
                 padding: '6px 10px',
@@ -152,58 +147,80 @@ export default function TradeList() {
                 gap: '10px',
                 alignItems: 'center',
                 borderRadius: '2px',
+                cursor: 'pointer',
               }}
             >
-              <div
-                style={{
-                  color: '#808000',
-                  fontWeight: 'bold',
-                  width: '140px',
-                  flexShrink: 0,
-                  fontSize: '13px',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
+              <span style={{ ...ellipsis, color: '#808000', fontWeight: 'bold', width: '140px', flexShrink: 0, fontSize: '13px' }}>
                 {trade.item_name}
-              </div>
-              <div
-                style={{
-                  flex: 1,
-                  color: '#6060ff',
-                  fontSize: '11px',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {truncate(trade.item_stats_raw)}
-              </div>
-              <div style={{ color: '#ff8c00', fontSize: '12px', flexShrink: 0 }}>
-                {trade.price}
-              </div>
-              {trade.contact ? (
-                <button
-                  onClick={() => copyContact(trade)}
-                  title={trade.contact}
-                  style={actionStyle}
-                >
-                  {copiedId === trade.id ? '已複製' : '聯繫'}
-                </button>
+              </span>
+              <span style={{ ...ellipsis, flex: 1, color: '#6060ff', fontSize: '11px' }}>
+                {trade.item_stats_raw?.replace(/\n/g, ' / ')}
+              </span>
+              <span style={{ color: '#ff8c00', fontSize: '12px', flexShrink: 0 }}>{trade.price}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {selected && (
+        <dialog
+          // showModal gives the backdrop, focus trap and Esc-to-close
+          ref={(d) => {
+            if (d && !d.open) d.showModal();
+          }}
+          onClose={() => setSelectedId(null)}
+          onClick={(e) => e.target === e.currentTarget && e.currentTarget.close()}
+          style={{
+            margin: 'auto', // Tailwind's reset zeroes the margin that centers a modal dialog
+            border: '1px solid #808000',
+            background: '#0d0d00',
+            color: 'inherit',
+            boxShadow: '0 12px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(128, 128, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06)',
+            padding: '12px 14px',
+            borderRadius: '2px',
+            width: 'min(420px, calc(100vw - 32px))',
+            height: 'min(440px, calc(100vh - 32px))',
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', height: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}>
+              <span style={{ color: '#808000', fontWeight: 'bold', fontSize: '14px' }}>{selected.item_name}</span>
+              <span style={{ color: '#ff8c00', fontSize: '13px', flexShrink: 0 }}>{selected.price}</span>
+            </div>
+            {selected.item_stats_raw && (
+              <div style={{ color: '#6060ff', fontSize: '12px', whiteSpace: 'pre-line', flex: 1, minHeight: 0, overflowY: 'auto' }}>{selected.item_stats_raw}</div>
+            )}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                borderTop: '1px solid #302c26',
+                paddingTop: '8px',
+                marginTop: 'auto',
+                fontSize: '12px',
+              }}
+            >
+              {selected.contact ? (
+                <>
+                  <span style={{ color: '#ccc', flex: 1, wordBreak: 'break-all' }}>{selected.contact}</span>
+                  <button onClick={() => copyContact(selected)} style={actionStyle}>
+                    {copiedId === selected.id ? '已複製' : '複製'}
+                  </button>
+                </>
               ) : (
-                <button onClick={signIn} style={actionStyle}>
-                  登入查看
+                <button onClick={signIn} style={{ ...actionStyle, marginRight: 'auto' }}>
+                  登入查看聯絡方式
                 </button>
               )}
-              {trade.mine && (
-                <button onClick={() => takeDown(trade)} style={actionStyle}>
+              {selected.mine && (
+                <button onClick={() => takeDown(selected)} style={actionStyle}>
                   下架
                 </button>
               )}
             </div>
-          ))}
-        </div>
+          </div>
+        </dialog>
       )}
     </div>
   );
