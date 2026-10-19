@@ -1,5 +1,6 @@
 // d2r-fe/src/pages/trade/TradeNew.tsx
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { createWorker, PSM, OEM, type Page, type Worker } from 'tesseract.js';
 import { useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
@@ -8,6 +9,7 @@ import { signIn, useUser } from '../../auth';
 import { TRADE_CATEGORIES } from '../items/itemCategories';
 import BackButton from '../../components/ui/BackButton';
 import { findTextLines, inkMask, makeLineCorrector, matchLine, mergeDigits, padLines } from './ocrText';
+import { itemLabel, loadTradeItems, type TradeItem } from './tradeItems';
 
 const CATEGORIES = [{ label: '請選擇', value: '' }, ...TRADE_CATEGORIES];
 
@@ -17,6 +19,7 @@ interface FormState {
   price: string;
   contact: string;
   category: string;
+  item_ref: string;
 }
 
 const inputStyle: React.CSSProperties = {
@@ -163,9 +166,29 @@ export default function TradeNew() {
     price: '',
     contact: '',
     category: '',
+    item_ref: '',
   });
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
+
+  const { data: tradeItems = [] } = useQuery({
+    queryKey: ['trade-items'],
+    queryFn: loadTradeItems,
+    staleTime: Infinity,
+  });
+  const byLabel = useMemo(() => new Map(tradeItems.map((t) => [itemLabel(t), t])), [tradeItems]);
+  // what the name box shows: an option label once an item is picked, otherwise free text
+  const [itemText, setItemText] = useState('');
+
+  const pickItem = (text: string, hit?: TradeItem) => {
+    setItemText(text);
+    setForm((f) => ({
+      ...f,
+      item_name: hit ? hit.name : text,
+      item_ref: hit?.ref ?? '',
+      category: hit?.category ?? f.category,
+    }));
+  };
 
   const latestFile = useRef<File | null>(null);
 
@@ -192,21 +215,28 @@ export default function TradeNew() {
       setOcrRaw(text);
       const lines = text.split('\n').filter((l) => !UI_HINT.test(l));
 
-      const [itemNames, baseItemNames, terms] = await Promise.all([
-        loadList('/data/item-names.json'),
+      const [catalog, baseItemNames, terms] = await Promise.all([
+        loadTradeItems(),
         loadList('/data/base-item-names.json'),
         loadList('/data/ocr-terms.json'),
       ]);
 
       // the name is usually the first line, but stray UI text can sit above it
-      const nameHit = matchLine(lines.slice(0, 3), itemNames);
+      const nameHit = matchLine(lines.slice(0, 3), [...new Set(catalog.map((t) => t.name))]);
+      const hit =
+        nameHit &&
+        (catalog.find((t) => t.name === nameHit.name && t.kind === 'item') ??
+          catalog.find((t) => t.name === nameHit.name));
       const rest = lines.slice((nameHit?.index ?? 0) + 1);
       const correct = makeLineCorrector(terms);
       const base = matchLine(rest.slice(0, 1), [...MISC_BASES, ...baseItemNames])?.name ?? (rest[0] && correct(rest[0]));
 
+      setItemText(hit ? itemLabel(hit) : (lines[0] ?? ''));
       setForm((f) => ({
         ...f,
-        item_name: nameHit?.name ?? lines[0] ?? '',
+        item_name: hit ? hit.name : (lines[0] ?? ''),
+        item_ref: hit?.ref ?? '',
+        category: hit?.category ?? f.category,
         item_stats_raw: [base, ...rest.slice(1).map(correct)].filter(Boolean).join('\n'),
       }));
     } catch {
@@ -258,6 +288,7 @@ export default function TradeNew() {
         price: form.price.trim(),
         contact: form.contact.trim(),
         category: form.category || undefined,
+        item_ref: form.item_ref || undefined,
       });
       navigate('/trade');
     } catch (err) {
@@ -365,9 +396,19 @@ export default function TradeNew() {
             <label style={labelStyle}>物品名稱 *</label>
             <input
               style={{ ...inputStyle, color: '#808000' }}
-              value={form.item_name}
-              onChange={handleField('item_name')}
+              list="trade-item-options"
+              value={itemText}
+              onChange={(e) => pickItem(e.target.value, byLabel.get(e.target.value))}
+              placeholder="輸入名稱搜尋"
             />
+            <datalist id="trade-item-options">
+              {[...byLabel.keys()].map((label) => (
+                <option key={label} value={label} />
+              ))}
+            </datalist>
+            <div style={{ color: form.item_ref ? '#5a8a5a' : '#666', fontSize: '10px', marginTop: '2px' }}>
+              {form.item_ref ? `已對應：${itemText}` : '未對應物品，可直接輸入名稱'}
+            </div>
             {errors.item_name && (
               <div style={{ color: '#ff4444', fontSize: '10px', marginTop: '2px' }}>
                 {errors.item_name}
