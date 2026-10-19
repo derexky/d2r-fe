@@ -205,7 +205,7 @@ export default function TradeList() {
                     setSelectedId(null);
                   }}
                   title="只看這個物品的掛單"
-                  style={{ color: '#808000', fontWeight: 'bold', fontSize: '14px', textAlign: 'left', textDecoration: 'underline', cursor: 'pointer' }}
+                  style={{ color: '#808000', fontWeight: 'bold', fontSize: '14px', background: 'none', border: 'none', padding: 0, textAlign: 'left', textDecoration: 'underline', cursor: 'pointer' }}
                 >
                   {selected.item_name}
                 </button>

@@ -216,7 +216,7 @@ export default function TradeNew() {
       const lines = text.split('\n').filter((l) => !UI_HINT.test(l));
 
       const [catalog, baseItemNames, terms] = await Promise.all([
-        loadTradeItems(),
+        loadTradeItems().catch(() => [] as TradeItem[]),
         loadList('/data/base-item-names.json'),
         loadList('/data/ocr-terms.json'),
       ]);
