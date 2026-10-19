@@ -30,6 +30,7 @@ export const TRADE_CATEGORIES = [
   ...UNIQUE_CATEGORIES,
   { label: '珠寶', value: 'jewels' },
   { label: '職業專屬', value: 'class_specific' },
+  { label: '符文之語', value: 'runewords' },
   { label: '符文', value: 'runes' },
   { label: '鑰匙', value: 'keys' },
   { label: '先祖雕像', value: 'statues' },
