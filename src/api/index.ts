@@ -60,6 +60,8 @@ export const api = {
     contact: string;
     category?: string;
   }) => client.post('/trades', body).then((r) => r.data.data),
+  deleteTrade: (id: number) =>
+    client.delete(`/trades/${id}`).then((r) => r.data.data),
 
   // Price stats
   priceTrackedGroups: (): Promise<{ category: string; items: string[]; zh?: Record<string, string> }[]> =>
