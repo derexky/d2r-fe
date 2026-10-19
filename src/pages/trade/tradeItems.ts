@@ -3,7 +3,7 @@ import { TRADE_CATEGORIES } from '../items/itemCategories';
 export interface TradeItem {
   ref: string;
   name: string;
-  kind: 'item' | 'runeword' | 'rune' | 'base' | 'misc';
+  kind: 'item' | 'set' | 'runeword' | 'rune' | 'base' | 'misc';
   category: string | null;
   slot?: string;
 }
@@ -34,7 +34,9 @@ export function itemLabel(t: TradeItem): string {
         ? '符文'
         : t.kind === 'base'
           ? `底材・${category}`
-          : category;
+          : t.kind === 'set'
+            ? `套裝・${category}`
+            : category;
   return `${t.name}（${kind}）`;
 }
 
