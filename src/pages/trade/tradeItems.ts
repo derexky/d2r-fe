@@ -1,4 +1,3 @@
-import { api } from '../../api';
 import { TRADE_CATEGORIES } from '../items/itemCategories';
 
 export interface TradeItem {
@@ -13,9 +12,12 @@ const SLOT_LABEL: Record<string, string> = { weapon: '武器', armor: '盔甲', 
 
 let cache: Promise<TradeItem[]> | undefined;
 
-// The list never changes while the app runs; retry on the next call if it failed
+// Static file written by d2r-service's SyncService; retry on the next call if it failed
 export function loadTradeItems(): Promise<TradeItem[]> {
-  cache ??= api.getTradeItems().catch((err: unknown) => {
+  cache ??= fetch('/data/trade-items.json').then((r) => {
+    if (!r.ok) throw new Error(`trade-items.json: HTTP ${r.status}`);
+    return r.json() as Promise<TradeItem[]>;
+  }).catch((err: unknown) => {
     cache = undefined;
     throw err;
   });
