@@ -14,6 +14,7 @@ interface Trade {
   price: string;
   contact?: string; // only sent to signed-in users
   category: string | null;
+  item_ref: string | null;
   created_at: string;
   mine: boolean;
 }
@@ -39,13 +40,17 @@ const actionStyle: React.CSSProperties = {
 
 export default function TradeList() {
   const [category, setCategory] = useState('');
-  const params = category ? { category } : undefined;
+  const [itemFilter, setItemFilter] = useState<{ ref: string; name: string } | null>(null);
+  const params = {
+    ...(category && { category }),
+    ...(itemFilter && { item_ref: itemFilter.ref }),
+  };
   const user = useUser();
   const queryClient = useQueryClient();
 
   const { data: trades = [], isLoading } = useQuery<Trade[]>({
     // uid in the key refetches on sign-in/out, since contacts and "mine" depend on it
-    queryKey: ['trades', category, user?.uid ?? null],
+    queryKey: ['trades', category, itemFilter?.ref ?? null, user?.uid ?? null],
     queryFn: () => api.getTrades(params),
     enabled: user !== undefined,
   });
@@ -126,6 +131,15 @@ export default function TradeList() {
         ))}
       </div>
 
+      {itemFilter && (
+        <div style={{ marginBottom: '12px', fontSize: '12px', color: '#aaa' }}>
+          物品：{itemFilter.name}{' '}
+          <button onClick={() => setItemFilter(null)} style={actionStyle} aria-label="取消物品篩選">
+            ✕
+          </button>
+        </div>
+      )}
+
       {isLoading || user === undefined ? (
         <div style={{ color: '#555', fontSize: '13px' }}>載入中…</div>
       ) : trades.length === 0 ? (
@@ -184,7 +198,20 @@ export default function TradeList() {
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', height: '100%' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}>
-              <span style={{ color: '#808000', fontWeight: 'bold', fontSize: '14px' }}>{selected.item_name}</span>
+              {selected.item_ref ? (
+                <button
+                  onClick={() => {
+                    setItemFilter({ ref: selected.item_ref!, name: selected.item_name });
+                    setSelectedId(null);
+                  }}
+                  title="只看這個物品的掛單"
+                  style={{ color: '#808000', fontWeight: 'bold', fontSize: '14px', textAlign: 'left', textDecoration: 'underline', cursor: 'pointer' }}
+                >
+                  {selected.item_name}
+                </button>
+              ) : (
+                <span style={{ color: '#808000', fontWeight: 'bold', fontSize: '14px' }}>{selected.item_name}</span>
+              )}
               <span style={{ color: '#ff8c00', fontSize: '13px', flexShrink: 0 }}>{selected.price}</span>
             </div>
             {selected.item_stats_raw && (
