@@ -1,9 +1,10 @@
 // d2r-fe/src/pages/trade/TradeNew.tsx
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { createWorker, PSM, OEM } from 'tesseract.js';
+import { createWorker, PSM, OEM, type Page, type Worker } from 'tesseract.js';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api';
 import BackButton from '../../components/ui/BackButton';
+import { findTextLines, makeLineCorrector, matchLine, mergeDigits, padLines } from './ocrText';
 
 const CATEGORIES = [
   { label: '請選擇', value: '' },
@@ -46,104 +47,100 @@ const labelStyle: React.CSSProperties = {
   marginBottom: '2px',
 };
 
-let itemNamesCache: string[] | null = null;
-let baseItemNamesCache: string[] | null = null;
+const jsonCache = new Map<string, Promise<string[]>>();
 
-async function getItemNames(): Promise<string[]> {
-  if (!itemNamesCache) {
-    itemNamesCache = await fetch('/data/item-names.json').then((r) => r.json());
-  }
-  return itemNamesCache!;
-}
-
-async function getBaseItemNames(): Promise<string[]> {
-  if (!baseItemNamesCache) {
-    baseItemNamesCache = await fetch('/data/base-item-names.json').then((r) => r.json());
-  }
-  return baseItemNamesCache!;
-}
-
-function levenshteinSim(a: string, b: string): number {
-  const m = a.length, n = b.length;
-  if (!m || !n) return 0;
-  const dp = Array.from({ length: m + 1 }, (_, i) =>
-    Array.from({ length: n + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0)),
-  );
-  for (let i = 1; i <= m; i++)
-    for (let j = 1; j <= n; j++)
-      dp[i][j] = a[i - 1] === b[j - 1] ? dp[i - 1][j - 1] : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
-  return 1 - dp[m][n] / Math.max(m, n);
-}
-
-function fuzzyMatchName(ocrName: string, candidates: string[]): string | null {
-  if (!ocrName || !candidates.length) return null;
-  let best = { name: '', score: 0 };
-  for (const name of candidates) {
-    const score = levenshteinSim(ocrName, name);
-    if (score > best.score) best = { name, score };
-  }
-  return best.score >= 0.5 ? best.name : null;
+function loadList(path: string): Promise<string[]> {
+  if (!jsonCache.has(path)) jsonCache.set(path, fetch(path).then((r) => r.json()));
+  return jsonCache.get(path)!;
 }
 
 function fixOcrText(raw: string): string {
   return raw
     .replace(/[|{}[\]]/g, '')                                         // strip junk chars
     .replace(/¥/g, '+')                                               // ¥ → + (D2R font)
-    .replace(/(\d+)96(?=\s|$)/gm, '$1%')                             // N96 → N% (D2R % font)
-    .replace(/(?<=[一-鿿])\s+(?=[一-鿿])/g, '')      // collapse inter-CJK spaces
+    .replace(/(\d+)(?:96|[Zz])(?=\s|$)/gm, '$1%')                    // N96 / NZ → N% (D2R % font)
+    .replace(/(\d+)\s*有\s*%/g, '$1%')                               // N 有 % → N% (same glyph)
+    .replace(/(?<=[一-鿿])[^\S\n]+(?=[一-鿿])/g, '') // collapse inter-CJK spaces, keep line breaks
     .split('\n').map((l) => l.trim()).filter(Boolean).join('\n');
 }
 
 // D2R tooltips are light text (gold/blue/white/grey) on a near-black panel; the dimmest
-// text colours land around gray 100, the panel well below. Tune if dim lines go missing.
+// text colours land around gray 100, the panel well below. Only used to find the text lines;
+// recognition runs on the inverted grayscale, whose anti-aliasing keeps thin CJK strokes.
+// Tune if dim lines go missing.
 const OCR_THRESHOLD = 80;
-// Upscaling helps small crops; full-screen captures are already large enough.
-const OCR_MAX_WIDTH = 2400;
+// Text-line height (px) the image is rescaled to; Tesseract reads CJK glyphs best around here.
+const OCR_LINE_HEIGHT = 36;
+const OCR_MAX_WIDTH = 4000;
 
-// One worker for the page lifetime: loading the WASM core and both language models
-// is the slow part, so later uploads reuse it.
-let workerPromise: ReturnType<typeof createWorker> | null = null;
-let onOcrProgress: ((p: number) => void) | null = null;
+// Workers live for the page lifetime: loading the WASM core and the language models is
+// the slow part, so later uploads reuse them. chi_tra reads the Chinese, eng the numbers
+// (see mergeDigits).
+let workersPromise: Promise<Worker[]> | null = null;
 
-function getWorker() {
-  if (!workerPromise) {
-    workerPromise = createWorker('chi_tra+eng', OEM.LSTM_ONLY, {
-      logger: (m) => {
-        if (m.status === 'recognizing text') onOcrProgress?.(Math.round(m.progress * 100));
-      },
-    }).then(async (w) => {
-      await w.setParameters({ tessedit_pageseg_mode: PSM.SINGLE_BLOCK });
-      return w;
-    });
-    workerPromise.catch(() => { workerPromise = null; });
+function getWorkers() {
+  if (!workersPromise) {
+    workersPromise = Promise.all(
+      ['chi_tra+eng', 'eng'].map(async (lang) => {
+        const w = await createWorker(lang, OEM.LSTM_ONLY);
+        await w.setParameters({ tessedit_pageseg_mode: PSM.SINGLE_LINE });
+        return w;
+      }),
+    );
+    workersPromise.catch(() => { workersPromise = null; });
   }
-  return workerPromise;
+  return workersPromise;
 }
 
-function preprocessForOCR(file: File): Promise<HTMLCanvasElement> {
+const ocrWords = (page: Page) =>
+  page.blocks?.flatMap((b) => b.paragraphs.flatMap((p) => p.lines.flatMap((l) => l.words))) ?? [];
+
+function loadImage(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
-    img.onload = () => {
-      const scale = Math.max(1, Math.min(2, OCR_MAX_WIDTH / img.width));
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      const ctx = canvas.getContext('2d')!;
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const { data } = imageData;
-      for (let i = 0; i < data.length; i += 4) {
-        const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-        // binarise and invert: Tesseract reads dark text on a light page best
-        data[i] = data[i + 1] = data[i + 2] = gray > OCR_THRESHOLD ? 0 : 255;
-      }
-      ctx.putImageData(imageData, 0, 0);
-      URL.revokeObjectURL(url);
-      resolve(canvas);
-    };
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
     img.onerror = reject;
     img.src = url;
+  });
+}
+
+function invertedGray(img: HTMLImageElement, scale: number) {
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(img.width * scale);
+  canvas.height = Math.round(img.height * scale);
+  const ctx = canvas.getContext('2d')!;
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const { data } = imageData;
+  for (let i = 0; i < data.length; i += 4) {
+    // invert: Tesseract reads dark text on a light page best
+    data[i] = data[i + 1] = data[i + 2] = 255 - (0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
+  }
+  ctx.putImageData(imageData, 0, 0);
+  return { canvas, data };
+}
+
+/** One inverted-grayscale canvas per tooltip line, scaled to OCR_LINE_HEIGHT. */
+async function preprocessForOCR(file: File) {
+  const img = await loadImage(file);
+  const inkBelow = 255 - OCR_THRESHOLD;
+  const probe = invertedGray(img, 1);
+  const heights = findTextLines(probe.data, img.width, img.height, 4, inkBelow)
+    .map((l) => l.bottom - l.top)
+    .sort((a, b) => a - b);
+  if (!heights.length) throw new Error('no text found');
+  const median = heights[heights.length >> 1];
+  const scale = Math.min(4, OCR_LINE_HEIGHT / median, OCR_MAX_WIDTH / img.width);
+  const { canvas, data } = Math.abs(scale - 1) < 0.05 ? probe : invertedGray(img, scale);
+  const lines = findTextLines(data, canvas.width, canvas.height, Math.round(OCR_LINE_HEIGHT * 0.4), inkBelow);
+  // real crops: Tesseract's `rectangle` option returned garbage for line-sized regions
+  return padLines(lines, canvas.height).map(({ top, bottom }) => {
+    const crop = document.createElement('canvas');
+    crop.width = canvas.width;
+    crop.height = bottom - top;
+    crop.getContext('2d')!.drawImage(canvas, 0, top, crop.width, crop.height, 0, 0, crop.width, crop.height);
+    return crop;
   });
 }
 
@@ -171,30 +168,38 @@ export default function TradeNew() {
     setImageUrl(URL.createObjectURL(file));
     setOcrProgress(0);
     setOcrRaw('');
-    onOcrProgress = setOcrProgress;
 
     try {
-      const [canvas, worker] = await Promise.all([preprocessForOCR(file), getWorker()]);
-      const result = await worker.recognize(canvas);
-      if (latestFile.current !== file) return; // a newer upload superseded this one
+      const [bands, [chi, eng]] = await Promise.all([preprocessForOCR(file), getWorkers()]);
+      const parts: string[] = [];
+      for (const [i, band] of bands.entries()) {
+        const [c, e] = await Promise.all([chi, eng].map((w) => w.recognize(band, {}, { blocks: true })));
+        if (latestFile.current !== file) return; // a newer upload superseded this one
+        parts.push(mergeDigits(ocrWords(c.data), ocrWords(e.data)));
+        setOcrProgress(Math.round(((i + 1) / bands.length) * 100));
+      }
 
-      const text = fixOcrText(result.data.text);
+      const text = fixOcrText(parts.join('\n'));
       setOcrRaw(text);
-      const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+      const lines = text.split('\n');
 
-      const [itemNames, baseItemNames] = await Promise.all([getItemNames(), getBaseItemNames()]);
+      const [itemNames, baseItemNames, terms] = await Promise.all([
+        loadList('/data/item-names.json'),
+        loadList('/data/base-item-names.json'),
+        loadList('/data/ocr-terms.json'),
+      ]);
 
-      const ocrName = lines[0] ?? '';
-      const matchedName = fuzzyMatchName(ocrName, itemNames) ?? ocrName;
+      // the name is usually the first line, but stray UI text can sit above it
+      const nameHit = matchLine(lines.slice(0, 3), itemNames);
+      const rest = lines.slice((nameHit?.index ?? 0) + 1);
+      const correct = makeLineCorrector(terms);
+      // base-item-names has no charms or jewels; their base type is snapped via the terms
+      const base = matchLine(rest.slice(0, 1), baseItemNames)?.name ?? (rest[0] && correct(rest[0]));
 
-      const ocrBase = lines[1] ?? '';
-      const matchedBase = fuzzyMatchName(ocrBase, baseItemNames) ?? ocrBase;
-
-      const statsLines = lines.slice(2);
       setForm((f) => ({
         ...f,
-        item_name: matchedName,
-        item_stats_raw: [matchedBase, ...statsLines].join('\n'),
+        item_name: nameHit?.name ?? lines[0] ?? '',
+        item_stats_raw: [base, ...rest.slice(1).map(correct)].filter(Boolean).join('\n'),
       }));
     } catch {
       if (latestFile.current === file) setOcrRaw('⚠ OCR 辨識失敗，請手動填入屬性');
