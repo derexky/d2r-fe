@@ -1,17 +1,20 @@
 // d2r-fe/src/pages/trade/TradeList.tsx
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import { isAxiosError } from 'axios';
 import { api } from '../../api';
+import { signIn, useUser } from '../../auth';
 
 interface Trade {
   id: number;
   item_name: string;
   item_stats_raw: string | null;
   price: string;
-  contact: string;
+  contact?: string; // only sent to signed-in users
   category: string | null;
   created_at: string;
+  mine: boolean;
 }
 
 const FILTER_CHIPS = [
@@ -35,19 +38,45 @@ function truncate(text: string | null, max = 60): string {
   return single.length > max ? single.slice(0, max) + '…' : single;
 }
 
+const actionStyle: React.CSSProperties = {
+  background: '#191714',
+  border: '1px solid #302c26',
+  color: '#aaa',
+  padding: '2px 8px',
+  borderRadius: '2px',
+  fontSize: '11px',
+  cursor: 'pointer',
+  flexShrink: 0,
+};
+
 export default function TradeList() {
   const [category, setCategory] = useState('');
   const params = category ? { category } : undefined;
+  const user = useUser();
+  const queryClient = useQueryClient();
 
   const { data: trades = [], isLoading } = useQuery<Trade[]>({
-    queryKey: ['trades', category],
+    // uid in the key refetches on sign-in/out, since contacts and "mine" depend on it
+    queryKey: ['trades', category, user?.uid ?? null],
     queryFn: () => api.getTrades(params),
+    enabled: user !== undefined,
   });
 
   const copyContact = (contact: string) => {
     navigator.clipboard.writeText(contact).catch(() => {
       window.prompt('複製聯絡方式：', contact);
     });
+  };
+
+  const takeDown = async (trade: Trade) => {
+    if (!window.confirm(`確定下架「${trade.item_name}」？`)) return;
+    try {
+      await api.deleteTrade(trade.id);
+    } catch (err) {
+      const status = isAxiosError(err) ? err.response?.status : undefined;
+      window.alert(status === 401 ? '請重新登入' : status === 404 ? '掛單不存在' : '下架失敗');
+    }
+    queryClient.invalidateQueries({ queryKey: ['trades'] });
   };
 
   return (
@@ -99,7 +128,7 @@ export default function TradeList() {
         ))}
       </div>
 
-      {isLoading ? (
+      {isLoading || user === undefined ? (
         <div style={{ color: '#555', fontSize: '13px' }}>載入中…</div>
       ) : trades.length === 0 ? (
         <div style={{ color: '#555', fontSize: '13px' }}>暫無掛單</div>
@@ -148,22 +177,24 @@ export default function TradeList() {
               <div style={{ color: '#ff8c00', fontSize: '12px', flexShrink: 0 }}>
                 {trade.price}
               </div>
-              <button
-                onClick={() => copyContact(trade.contact)}
-                title={trade.contact}
-                style={{
-                  background: '#191714',
-                  border: '1px solid #302c26',
-                  color: '#aaa',
-                  padding: '2px 8px',
-                  borderRadius: '2px',
-                  fontSize: '11px',
-                  cursor: 'pointer',
-                  flexShrink: 0,
-                }}
-              >
-                聯繫
-              </button>
+              {trade.contact ? (
+                <button
+                  onClick={() => copyContact(trade.contact!)}
+                  title={trade.contact}
+                  style={actionStyle}
+                >
+                  聯繫
+                </button>
+              ) : (
+                <button onClick={signIn} style={actionStyle}>
+                  登入查看
+                </button>
+              )}
+              {trade.mine && (
+                <button onClick={() => takeDown(trade)} style={actionStyle}>
+                  下架
+                </button>
+              )}
             </div>
           ))}
         </div>
