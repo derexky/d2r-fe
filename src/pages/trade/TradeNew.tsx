@@ -59,7 +59,7 @@ function fixOcrText(raw: string): string {
     .split('\n').map((l) => l.trim()).filter(Boolean).join('\n');
 }
 
-// base types missing from base-item-names.json (it lists equipment only); without them the
+// base types missing from base-item-names (it lists equipment only); without them the
 // fuzzy match turns 大型咒符 into 大型盾
 const MISC_BASES = ['小型咒符', '大型咒符', '特大咒符', '珠寶', '戒指', '護身符'];
 
@@ -240,8 +240,8 @@ export default function TradeNew() {
 
       const [catalog, baseItemNames, terms] = await Promise.all([
         loadTradeItems().catch(() => [] as TradeItem[]),
-        loadList('/data/base-item-names.json'),
-        loadList('/data/ocr-terms.json'),
+        loadList('/api/data/base-item-names'),
+        loadList('/api/data/ocr-terms'),
       ]);
 
       // the name is usually the first line, but stray UI text can sit above it

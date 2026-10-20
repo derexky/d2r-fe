@@ -14,10 +14,10 @@ const SLOT_LABEL: Record<string, string> = { weapon: '武器', armor: '盔甲', 
 
 let cache: Promise<TradeItem[]> | undefined;
 
-// Static file written by d2r-service's SyncService; retry on the next call if it failed
+// Built from the item DB by d2r-service; retry on the next call if it failed
 export function loadTradeItems(): Promise<TradeItem[]> {
-  cache ??= fetch('/data/trade-items.json').then((r) => {
-    if (!r.ok) throw new Error(`trade-items.json: HTTP ${r.status}`);
+  cache ??= fetch('/api/data/trade-items').then((r) => {
+    if (!r.ok) throw new Error(`trade-items: HTTP ${r.status}`);
     return r.json() as Promise<TradeItem[]>;
   }).catch((err: unknown) => {
     cache = undefined;
