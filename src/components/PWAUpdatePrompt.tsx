@@ -1,7 +1,16 @@
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 export default function PWAUpdatePrompt() {
-  const { needRefresh: [needRefresh], updateServiceWorker } = useRegisterSW();
+  const { needRefresh: [needRefresh], updateServiceWorker } = useRegisterSW({
+    onRegisteredSW(_url, r) {
+      if (!r) return;
+      // 瀏覽器只在載入網頁時檢查新版；分頁一直開著、或 App 從背景切回時要自己檢查
+      setInterval(() => r.update(), 60 * 60 * 1000);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') r.update();
+      });
+    },
+  });
 
   if (!needRefresh) return null;
 
