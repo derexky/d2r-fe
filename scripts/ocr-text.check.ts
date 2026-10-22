@@ -1,12 +1,12 @@
 // Self-check for src/pages/trade/ocrText.ts. Run: node scripts/ocr-text.check.ts
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 import { editDistance, findTextLines, hideFixedStats, inkMask, makeLineCorrector, matchLine, mergeDigits, padLines } from '../src/pages/trade/ocrText.ts';
 
 assert.equal(editDistance('增強傷害', '増強傷審'), 2);
 assert.equal(editDistance('', 'abc'), 3);
 
-const terms: string[] = JSON.parse(readFileSync(new URL('../public/data/ocr-terms.json', import.meta.url), 'utf8'));
+// a slice of /api/data/ocr-terms, enough for the cases below
+const terms = ['增強傷害', '冰封球', '冰封甲', '力量', '天堂裂擊', '攻擊時有', '機會施展等級'];
 const correct = makeLineCorrector(terms);
 assert.equal(correct('+60% 增強傷審'), '+60% 增強傷害');           // one misread char snapped
 assert.equal(correct('+3 冰封球'), '+3 冰封球');                    // known term untouched
