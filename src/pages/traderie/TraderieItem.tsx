@@ -75,7 +75,7 @@ export default function TraderieItem() {
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 0', borderBottom: '1px solid #191714' }}>
               <span style={{ color: '#6b665d', fontSize: '11px', minWidth: '24px' }}>#{i + 1}</span>
               <span style={{ color: '#ffa040', flex: 1, fontSize: '13px' }}>
-                {entry.items.map((it) => `${it.quantity > 1 ? it.quantity + '× ' : ''}${it.name}`).join(' + ')}
+                {entry.items.map((it) => `${it.quantity !== 1 ? it.quantity + '× ' : ''}${it.name}`).join(' + ')}
               </span>
               <span style={{ color: 'var(--muted)', fontSize: '11px' }}>{entry.freq} 次</span>
             </div>
