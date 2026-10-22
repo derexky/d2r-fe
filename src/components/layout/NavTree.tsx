@@ -66,6 +66,7 @@ const NAV: NavItem[] = [
     ],
   },
   { label: '交易市集', to: '/trade' },
+  { label: '裝備辨識', to: '/item-ocr' },
   { label: '成交查價', to: '/traderie' },
   { label: '關於易牙居', to: '/about' },
 ];
