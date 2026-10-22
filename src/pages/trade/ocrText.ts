@@ -189,3 +189,81 @@ export function padLines(lines: { top: number; bottom: number }[], height: numbe
     return { top: Math.max(0, top), bottom: Math.min(height, bottom) };
   });
 }
+
+const REQUIREMENT = /需要等級|等級需求|力量需求|敏捷需求|耐久度/;
+const ABBREV = /\(([+-]?[A-Za-z][A-Za-z ]*)\)/;
+
+// Abbreviations for tooltips without a loot filter, keyed by the line's Chinese characters and
+// named as the filter names them. Exact keys, so 生命 leaves 每級增加生命 alone; an unlisted or misread line stays as is.
+// ponytail: common trade stats only; move to stat_defs once its abbreviations are cleaned up
+const ABBREVS: Record<string, string> = {
+  跑步行走速度: 'FRW',
+  電擊抗性: 'LR',
+  敵人電擊抗性: 'LR',
+  火焰抗性: 'FR',
+  敵人火焰抗性: 'FR',
+  冰冷抗性: 'CR',
+  敵人冰寒抗性: 'CR',
+  毒素抗性: 'PR',
+  敵人毒素抗性: 'PR',
+  所有抗性: 'Res',
+  所有屬性: 'Attr',
+  轉為所有屬性: 'Attr',
+  閃電技能傷害: 'LD',
+  火焰技能傷害: 'FD',
+  冰寒技能傷害: 'CD',
+  生命: 'Life',
+  法力: 'Mana',
+  力量: 'Str',
+  敏捷: 'Dex',
+  體力: 'Vit',
+  能量: 'Ene',
+  傷害降低: 'DR',
+  增強傷害: 'ED',
+  增強防禦: 'ED',
+  防禦: 'Def',
+  攻擊準確率: 'AR',
+  偷取生命: 'LL',
+  偷取法力: 'ML',
+  所有技能: 'Skills',
+  致命攻擊: 'DS',
+  壓碎性打擊: 'CB',
+  撕開傷口: 'OW',
+};
+
+// Keys matched anywhere in the line, tried after ABBREVS and longest first; for stats whose
+// wording varies around a fixed core (怪物金幣掉落量提高, 額外金幣掉落)
+const ABBREVS_PARTIAL: Record<string, string> = {
+  金幣掉落: 'EG',
+  施法速度: 'FCR',
+  打擊恢復: 'FHR',
+  攻擊速度: 'IAS',
+};
+const PARTIAL_KEYS = Object.keys(ABBREVS_PARTIAL).sort((a, b) => b.length - a.length);
+
+/** A stat line shrinks to its numbers plus the stat's abbreviation: +10% 跑步 / 行走速度(FRW) → +10%FRW. */
+function abbreviate(line: string): string {
+  const cjk = line.replace(/[^一-鿿]/g, '');
+  const partial = PARTIAL_KEYS.find((k) => cjk.includes(k));
+  const abbr = line.match(ABBREV)?.[1] ?? ABBREVS[cjk] ?? (partial && ABBREVS_PARTIAL[partial]);
+  const nums = abbr && line.replace(ABBREV, '').match(/[+-]?\d+(?:-\d+)?%?/g);
+  return nums ? nums.join(' ') + abbr.replace(/^[+-]|\s/g, '') : line;
+}
+
+/**
+ * Drop the fixed lines of `text`, whose first line is the base and always stays. A line is fixed
+ * when it equals one of the item's DB tooltip lines, spaces aside (a rolled stat is listed as a
+ * range no single roll reads as), is a requirement, or holds no number (破除怪物的閃電免疫);
+ * 無形 has no number but differs per copy. DB wording often differs from the game's and loot
+ * filters add abbreviations, so the last two rules carry most items. Kept stat lines are abbreviated.
+ */
+export function hideFixedStats(text: string, labels: string[]): string {
+  const norm = (s: string) => s.replace(/\s/g, '');
+  const fixed = new Set(labels.map(norm));
+  const isFixed = (line: string) =>
+    fixed.has(norm(line)) || REQUIREMENT.test(line) || (!/\d/.test(line) && !line.includes('無形'));
+  return text
+    .split('\n')
+    .flatMap((line, i) => (i === 0 ? [line] : isFixed(line) ? [] : [abbreviate(line)]))
+    .join('\n');
+}

@@ -12,6 +12,7 @@ function loadList(path: string): Promise<string[]> {
 
 function fixOcrText(raw: string): string {
   return raw
+    .replace(/[[【][^\]】\n]*[\]】]/g, '')                             // drop [bracketed] tooltip hints
     .replace(/[|{}[\]“”]/g, '')                                       // strip junk chars
     .replace(/¥/g, '+')                                               // ¥ → + (D2R font)
     .replace(/(\d+)(?:96|[Zz])(?=\s|$)/gm, '$1%')                    // N96 / NZ → N% (D2R % font)

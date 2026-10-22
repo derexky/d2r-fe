@@ -7,10 +7,15 @@ import { api } from '../../api';
 import { signIn, useUser } from '../../auth';
 import { TRADE_CATEGORIES } from '../items/itemCategories';
 import BackButton from '../../components/ui/BackButton';
+import { hideFixedStats } from './ocrText';
 import { recognizeItem } from './recognizeItem';
-import { BASE_FILTERS, QUALITIES, categoryOptions, loadTradeItems, runewordBaseOptions, type BaseFilter } from './tradeItems';
+import { BASE_FILTERS, QUALITIES, categoryOptions, loadStatLabels, loadTradeItems, runewordBaseOptions, type BaseFilter } from './tradeItems';
 
 const CATEGORIES = [{ label: '請選擇', value: '' }, ...TRADE_CATEGORIES];
+const STAT_VIEWS = [
+  { label: '全部屬性', value: false },
+  { label: '只顯示變量', value: true },
+];
 
 interface FormState {
   item_name: string;
@@ -66,6 +71,15 @@ export default function TradeNew() {
     staleTime: Infinity,
   });
   const [baseFilter, setBaseFilter] = useState<BaseFilter>('');
+  const [variableOnly, setVariableOnly] = useState(false);
+  const { data: statLabels = [] } = useQuery({
+    queryKey: ['stat-labels', form.item_ref],
+    queryFn: () => loadStatLabels(form.item_ref),
+    enabled: !!form.item_ref,
+    staleTime: Infinity,
+  });
+  const filtering = variableOnly && !!form.item_stats_raw;
+  const shownStats = filtering ? hideFixedStats(form.item_stats_raw, statLabels) : form.item_stats_raw;
   const { options: categoryItems, hasBoth } = useMemo(
     () => categoryOptions(tradeItems, form.category, baseFilter),
     [tradeItems, form.category, baseFilter],
@@ -166,7 +180,7 @@ export default function TradeNew() {
     try {
       await api.createTrade({
         item_name: form.item_name.trim(),
-        item_stats_raw: form.item_stats_raw.trim() || undefined,
+        item_stats_raw: shownStats.trim() || undefined,
         price: form.price.trim(),
         contact: form.contact.trim(),
         category: form.category || undefined,
@@ -364,9 +378,27 @@ export default function TradeNew() {
 
           <div>
             <label style={labelStyle}>屬性描述</label>
+            {!!form.item_stats_raw && (
+              <div role="tablist" aria-label="屬性顯示" style={{ display: 'flex', gap: '12px', fontSize: '12px', marginBottom: '4px' }}>
+                {STAT_VIEWS.map((v) => (
+                  <button
+                    key={v.label}
+                    type="button"
+                    role="tab"
+                    aria-selected={variableOnly === v.value}
+                    onClick={() => setVariableOnly(v.value)}
+                    style={{ color: variableOnly === v.value ? '#808000' : '#555', borderBottom: variableOnly === v.value ? '1px solid #808000' : '1px solid transparent' }}
+                  >
+                    {v.label}
+                  </button>
+                ))}
+              </div>
+            )}
             <textarea
               style={{ ...inputStyle, color: '#6060ff', minHeight: '80px', resize: 'vertical' }}
-              value={form.item_stats_raw}
+              value={shownStats}
+              // the filtered view is derived, edit in 全部屬性
+              readOnly={filtering}
               onChange={handleField('item_stats_raw')}
             />
           </div>

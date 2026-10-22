@@ -1,3 +1,4 @@
+import { api } from '../../api';
 import { TRADE_CATEGORIES } from '../items/itemCategories';
 
 export interface TradeItem {
@@ -24,6 +25,14 @@ export function loadTradeItems(): Promise<TradeItem[]> {
     throw err;
   });
   return cache;
+}
+
+// The tooltip lines the item DB holds for a unique or runeword; other kinds have none
+export async function loadStatLabels(ref: string): Promise<string[]> {
+  const [kind, id] = ref.split(':');
+  if (kind === 'item') return (JSON.parse((await api.getItem(+id)).stats ?? '[]') as { label: string }[]).map((s) => s.label);
+  if (kind === 'runeword') return JSON.parse((await api.getRuneword(+id)).effects ?? '[]');
+  return [];
 }
 
 // Unique per item: same-named items differ in kind, category or slot (族長 axe vs sword, 精神 weapon vs shield)

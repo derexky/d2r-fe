@@ -1,7 +1,7 @@
 // Self-check for src/pages/trade/ocrText.ts. Run: node scripts/ocr-text.check.ts
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { editDistance, findTextLines, inkMask, makeLineCorrector, matchLine, mergeDigits, padLines } from '../src/pages/trade/ocrText.ts';
+import { editDistance, findTextLines, hideFixedStats, inkMask, makeLineCorrector, matchLine, mergeDigits, padLines } from '../src/pages/trade/ocrText.ts';
 
 assert.equal(editDistance('增強傷害', '増強傷審'), 2);
 assert.equal(editDistance('', 'abc'), 3);
@@ -71,3 +71,21 @@ assert.deepEqual(lines, [{ top: 1, bottom: 3 }, { top: 6, bottom: 9 }]);
 assert.deepEqual(padLines(lines, h), [{ top: 0, bottom: 4 }, { top: 4, bottom: 10 }]);
 
 console.log('ocrText ok');
+
+const titan = ['等級需求: 42', '+150-200% 增強傷害', '5-9% 偷取生命', '+20 力量', '+2 標槍和長矛技能 (限亞馬遜)'];
+assert.equal(
+  hideFixedStats('戰爭標槍\n等級需求: 42\n+180% 增強傷害\n7% 偷取生命\n+20力量\n+2 標槍和長矛技能 (限亞馬遜)', titan),
+  '戰爭標槍\n+180%ED\n7%LL', // base and rolled stats stay
+);
+assert.equal(
+  hideFixedStats('特大咒符GC\n放在物品欄以獲得其加成效果\n需要等級：75\n破除怪物的閃電免疫\n+44 生命(Life)\n無形（無法修復）', []),
+  '特大咒符GC\n+44Life\n無形（無法修復）', // no DB match needed for requirements and number-free lines
+);
+assert.equal(
+  hideFixedStats('特大咒符GC\n+10% 跑步 / 行走速度(FRW)\n敵人電擊抗性(-LR) -9%\n傷害降低(DR) 6\n+2-148 生命 (依角色等級)', []),
+  '特大咒符GC\n+10%FRW\n-9%LR\n6DR\n+2-148 生命 (依角色等級)', // only Latin abbreviations shrink a line
+);
+assert.equal(
+  hideFixedStats('特大咒符GC\n+10% 跑步 / 行走速度\n敵人電擊抗性 -9%\n怪物金幣掉落量提高 26%\n+20% 高速施法速度\n每級增加 生命 3', []),
+  '特大咒符GC\n+10%FRW\n-9%LR\n26%EG\n+20%FCR\n每級增加 生命 3', // no filter: exact keys, then partial ones
+);

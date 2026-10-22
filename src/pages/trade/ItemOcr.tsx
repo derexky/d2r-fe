@@ -1,6 +1,16 @@
 // d2r-fe/src/pages/trade/ItemOcr.tsx
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { TRADE_CATEGORIES } from '../items/itemCategories';
+import { hideFixedStats } from './ocrText';
 import { recognizeItem } from './recognizeItem';
+import { BASE_FILTERS, categoryOptions, loadStatLabels, loadTradeItems, type BaseFilter } from './tradeItems';
+
+const CATEGORIES = [{ label: '請選擇', value: '' }, ...TRADE_CATEGORIES];
+const STAT_VIEWS = [
+  { label: '全部屬性', value: false },
+  { label: '只顯示變量', value: true },
+];
 
 const boxStyle: React.CSSProperties = {
   background: '#191714',
@@ -20,7 +30,48 @@ export default function ItemOcr() {
   const [name, setName] = useState('');
   const [stats, setStats] = useState('');
   const [copied, setCopied] = useState(false);
+  const [category, setCategory] = useState('');
+  const [itemRef, setItemRef] = useState('');
+  const [baseFilter, setBaseFilter] = useState<BaseFilter>('');
+  const [variableOnly, setVariableOnly] = useState(false);
   const latestFile = useRef<File | null>(null);
+
+  const { data: tradeItems = [] } = useQuery({
+    queryKey: ['trade-items'],
+    queryFn: loadTradeItems,
+    staleTime: Infinity,
+  });
+  const { options: categoryItems, hasBoth } = useMemo(
+    () => categoryOptions(tradeItems, category, baseFilter),
+    [tradeItems, category, baseFilter],
+  );
+
+  const { data: statLabels = [] } = useQuery({
+    queryKey: ['stat-labels', itemRef],
+    queryFn: () => loadStatLabels(itemRef),
+    enabled: !!itemRef,
+    staleTime: Infinity,
+  });
+  const filtering = variableOnly && !!stats;
+  const shownStats = filtering ? hideFixedStats(stats, statLabels) : stats;
+
+  const pickCategory = (c: string) => {
+    setCategory(c);
+    setBaseFilter('');
+    if (!tradeItems.some((t) => t.ref === itemRef && t.category === c)) setItemRef('');
+  };
+
+  const pickBaseFilter = (filter: BaseFilter) => {
+    setBaseFilter(filter);
+    const t = tradeItems.find((i) => i.ref === itemRef);
+    if (filter && t && (t.kind === 'base') !== (filter === 'base')) setItemRef('');
+  };
+
+  const pickItem = (ref: string) => {
+    setItemRef(ref);
+    const hit = categoryItems.find((t) => t.ref === ref);
+    if (hit) setName(hit.name);
+  };
 
   useEffect(() => () => { if (imageUrl) URL.revokeObjectURL(imageUrl); }, [imageUrl]);
 
@@ -37,6 +88,9 @@ export default function ItemOcr() {
       setRaw(r.raw);
       setName(r.name);
       setStats(r.stats);
+      setBaseFilter('');
+      setItemRef(r.hit?.ref ?? '');
+      if (r.hit?.category) setCategory(r.hit.category);
     } catch {
       if (latestFile.current === file) setError('⚠ OCR 辨識失敗，請換一張截圖或手動輸入');
     } finally {
@@ -45,7 +99,7 @@ export default function ItemOcr() {
   }, []);
 
   const copy = async () => {
-    await navigator.clipboard.writeText([name, stats].filter(Boolean).join('\n'));
+    await navigator.clipboard.writeText([name, shownStats].filter(Boolean).join('\n'));
     setCopied(true);
   };
 
@@ -106,16 +160,66 @@ export default function ItemOcr() {
         </div>
 
         <div style={{ flex: '1 1 280px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <select style={{ ...boxStyle, color: '#aaa' }} value={category} onChange={(e) => pickCategory(e.target.value)} aria-label="物品類別">
+            {CATEGORIES.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+          {hasBoth && (
+            <select
+              style={{ ...boxStyle, color: '#aaa' }}
+              value={baseFilter}
+              onChange={(e) => pickBaseFilter(e.target.value as BaseFilter)}
+              aria-label="依是否為底材篩選"
+            >
+              {BASE_FILTERS.map((b) => (
+                <option key={b.value} value={b.value}>
+                  {b.label}
+                </option>
+              ))}
+            </select>
+          )}
+          {categoryItems.length > 0 && (
+            <select style={{ ...boxStyle, color: '#aaa' }} value={itemRef} onChange={(e) => pickItem(e.target.value)} aria-label="物品">
+              <option value="">不在清單中（手動輸入名稱）</option>
+              {categoryItems.map((t) => (
+                <option key={t.ref} value={t.ref}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          )}
           <input
             style={{ ...boxStyle, color: '#808000' }}
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            // a typed name no longer matches the picked item
+            onChange={(e) => { setName(e.target.value); setItemRef(''); }}
             placeholder="物品名稱"
             aria-label="物品名稱"
           />
+          {!!stats && (
+            <div role="tablist" aria-label="屬性顯示" style={{ display: 'flex', gap: '12px', fontSize: '12px' }}>
+              {STAT_VIEWS.map((v) => (
+                <button
+                  key={v.label}
+                  type="button"
+                  role="tab"
+                  aria-selected={variableOnly === v.value}
+                  onClick={() => setVariableOnly(v.value)}
+                  style={{ color: variableOnly === v.value ? '#808000' : '#555', borderBottom: variableOnly === v.value ? '1px solid #808000' : '1px solid transparent' }}
+                >
+                  {v.label}
+                </button>
+              ))}
+            </div>
+          )}
           <textarea
             style={{ ...boxStyle, color: '#6060ff', minHeight: '200px', resize: 'vertical' }}
-            value={stats}
+            value={shownStats}
+            // the filtered view is derived, edit in 全部屬性
+            readOnly={filtering}
             onChange={(e) => setStats(e.target.value)}
             placeholder="屬性"
             aria-label="屬性"

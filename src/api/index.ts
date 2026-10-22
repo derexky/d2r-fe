@@ -16,6 +16,8 @@ export const api = {
   // Runewords
   getRunewords: (params?: Record<string, string>) =>
     client.get('/runewords', { params }).then((r) => r.data.data),
+  getRuneword: (id: number) =>
+    client.get(`/runewords/${id}`).then((r) => r.data.data),
 
   // Builds
   getBuilds: (params?: Record<string, string>) =>
