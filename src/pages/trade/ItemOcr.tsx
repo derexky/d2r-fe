@@ -29,7 +29,7 @@ export default function ItemOcr() {
   const [raw, setRaw] = useState('');
   const [name, setName] = useState('');
   const [stats, setStats] = useState('');
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
   const [category, setCategory] = useState('');
   const [itemRef, setItemRef] = useState('');
   const [baseFilter, setBaseFilter] = useState<BaseFilter>('');
@@ -81,7 +81,7 @@ export default function ItemOcr() {
     setProgress(0);
     setError('');
     setRaw('');
-    setCopied(false);
+    setCopied(null);
     try {
       const r = await recognizeItem(file, setProgress, () => latestFile.current !== file);
       if (!r) return;
@@ -98,9 +98,9 @@ export default function ItemOcr() {
     }
   }, []);
 
-  const copy = async () => {
-    await navigator.clipboard.writeText([name, shownStats].filter(Boolean).join('\n'));
-    setCopied(true);
+  const copy = async (sep: string) => {
+    await navigator.clipboard.writeText([name, shownStats].filter(Boolean).join('\n').replace(/\n+/g, sep));
+    setCopied(sep);
   };
 
   return (
@@ -224,22 +224,27 @@ export default function ItemOcr() {
             placeholder="屬性"
             aria-label="屬性"
           />
-          <button
-            type="button"
-            onClick={copy}
-            disabled={!name && !stats}
-            style={{
-              background: '#1a1400',
-              border: '1px solid #808000',
-              color: '#808000',
-              padding: '8px 20px',
-              cursor: 'pointer',
-              borderRadius: '2px',
-              fontSize: '13px',
-            }}
-          >
-            {copied ? '已複製 ✓' : '複製文字'}
-          </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            {[{ sep: '\n', label: '複製文字' }, { sep: ' ', label: '複製成一行' }].map((c) => (
+              <button
+                key={c.label}
+                type="button"
+                onClick={() => copy(c.sep)}
+                disabled={!name && !stats}
+                style={{
+                  background: '#1a1400',
+                  border: '1px solid #808000',
+                  color: '#808000',
+                  padding: '8px 20px',
+                  cursor: 'pointer',
+                  borderRadius: '2px',
+                  fontSize: '13px',
+                }}
+              >
+                {copied === c.sep ? '已複製 ✓' : c.label}
+              </button>
+            ))}
+          </div>
           {raw && (
             <details style={{ fontSize: '10px', color: '#423c33' }}>
               <summary style={{ cursor: 'pointer' }}>OCR 原始輸出</summary>
